@@ -1,0 +1,59 @@
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
+        }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-20160116.192356-17'
+    }
+}
+
+apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+sourceCompatibility = "1.8"
+targetCompatibility = "1.8"
+
+version = "0.0.1"
+
+group = "com.simon816.i15n"
+
+archivesBaseName = "Industrialization"
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'sponge'
+        url = 'http://repo.spongepowered.org/maven'
+    }
+    maven {
+        name = 'forge'
+        url = 'http://files.minecraftforge.net/maven'
+    }
+}
+
+dependencies {
+    compile 'org.spongepowered:spongeapi:4.2.0-SNAPSHOT'
+    compile 'org.spongepowered:spongeforge:1.8.9-1890-4.2.0-BETA-1762:dev'
+}
+
+compileJava.options.encoding = 'UTF-8'
+// Stop AP generating a mcmod.info file
+compileJava.options.compilerArgs += '-proc:none'
+
+minecraft {
+    version = "1890"
+    runDir = "run"
+    mappings = "stable_22"
+}
+
+processResources {
+    from('src/main/resources') {
+        include 'mcmod.info'
+        expand(version: project.version)
+    }
+}

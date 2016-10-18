@@ -1,0 +1,13 @@
+[{
+    "modid": "industrialization",
+    "name": "Industrialization",
+    "description": "A plugin that adds pipes, turtles, auto crafting and more",
+    "version": "$version",
+    "url": "https://github.com/simon816/Industrialization",
+    "authors": ["Simon816"],
+    "requiredMods": [
+    ],
+    "dependencies": [
+    ],
+    "useDependencyInformation": true
+}]
