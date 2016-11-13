@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataView;
+import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 
 import com.google.common.collect.Lists;
@@ -14,8 +15,22 @@ public class SimpleInventory implements InventoryAdapter {
 
     private ItemStack[] itemArray;
 
+    private Inventory apiInv;
+
     public SimpleInventory(int size) {
         this.itemArray = new ItemStack[size];
+    }
+
+    public void setApiInventory(Inventory inv) {
+        this.apiInv = inv;
+    }
+
+    @Override
+    public Inventory getAPIInventory() {
+        if (this.apiInv == null) {
+            // TODO
+        }
+        return this.apiInv;
     }
 
     @Override

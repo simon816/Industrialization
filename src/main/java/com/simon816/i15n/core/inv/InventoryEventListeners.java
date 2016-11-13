@@ -2,27 +2,20 @@ package com.simon816.i15n.core.inv;
 
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
-import org.spongepowered.api.item.inventory.transaction.SlotTransaction;
+import org.spongepowered.api.event.item.inventory.TargetInventoryEvent;
 
-import com.simon816.i15n.core.inv.impl.ContainerAutoWorkbench;
+import com.simon816.i15n.core.inv.InventoryTracker.EventBinder;
 
 public class InventoryEventListeners {
 
     @Listener
-    public void onInventoryClick(ClickInventoryEvent event) {
-        if (event.getTargetInventory() instanceof ContainerAutoWorkbench) {
-            for (SlotTransaction transaction : event.getTransactions()) {
-                if (!transaction.isValid()) {
-                    continue;
-                }
-                if (transaction.getOriginal().getCount() < 1) {
-                    if (!((ContainerAutoWorkbench) event.getTargetInventory()).onOutputClick()) {
-                        transaction.setValid(false);
-                        transaction.setCustom(transaction.getOriginal());
-                        event.setCancelled(true);
-                    }
-                }
-            }
+    public void onInventoryClick(ClickInventoryEvent event) {}
+
+    @Listener
+    public void onInventoryEvent(TargetInventoryEvent event) {
+        EventBinder binder = InventoryTracker.get(event.getTargetInventory());
+        if (binder != null) {
+            binder.incommingEvent(event);
         }
     }
 

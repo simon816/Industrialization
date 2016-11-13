@@ -32,11 +32,6 @@ public class CustomItemData extends AbstractData<CustomItemData, CustomItemData.
     protected void registerGettersAndSetters() {}
 
     @Override
-    public int compareTo(CustomItemData o) {
-        return 0;
-    }
-
-    @Override
     public int getContentVersion() {
         return 1;
     }
@@ -83,11 +78,6 @@ public class CustomItemData extends AbstractData<CustomItemData, CustomItemData.
 
         @Override
         protected void registerGetters() {}
-
-        @Override
-        public int compareTo(Immutable o) {
-            return 0;
-        }
 
         @Override
         public int getContentVersion() {

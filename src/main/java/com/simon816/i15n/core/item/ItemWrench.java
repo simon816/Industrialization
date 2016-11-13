@@ -3,6 +3,7 @@ package com.simon816.i15n.core.item;
 import java.util.Optional;
 
 import org.spongepowered.api.block.BlockSnapshot;
+import org.spongepowered.api.data.type.HandType;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.ItemTypes;
@@ -24,13 +25,13 @@ public class ItemWrench extends CustomItem {
     }
 
     @Override
-    public boolean onItemUse(ItemStack itemStack, Player player, BlockSnapshot clickedBlock, Direction side,
-            Vector3d clickPoint) {
+    public boolean onItemUse(ItemStack itemStack, Player player, HandType currHand, BlockSnapshot clickedBlock,
+            Direction side, Vector3d clickPoint) {
         return false;
     }
 
-    public static boolean isPlayerUsing(Player player) {
-        Optional<ItemStack> opItem = player.getItemInHand();
+    public static boolean isPlayerUsing(Player player, HandType currHand) {
+        Optional<ItemStack> opItem = player.getItemInHand(currHand);
         if (!opItem.isPresent()) {
             return false;
         }

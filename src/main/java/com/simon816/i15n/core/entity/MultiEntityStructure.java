@@ -2,13 +2,13 @@ package com.simon816.i15n.core.entity;
 
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataView;
+import org.spongepowered.api.data.type.HandType;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.living.player.Player;
@@ -41,12 +41,8 @@ public class MultiEntityStructure {
                 throw new IllegalArgumentException("Incorrect class for type");
             }
             this.definitions.put(identifier, (world, pos) -> {
-                Optional<Entity> opEntity = world.createEntity(entityType, pos.toFloat().add(offsetPos).toDouble());
-                if (!opEntity.isPresent()) {
-                    return null;
-                }
                 @SuppressWarnings("unchecked")
-                T entity = (T) opEntity.get();
+                T entity = (T) world.createEntity(entityType, pos.toFloat().add(offsetPos).toDouble());
                 initializer.accept(entity);
                 return entity;
             });
@@ -66,7 +62,6 @@ public class MultiEntityStructure {
         Entity entity = fn.apply(world, pos);
         if (entity != null && world.spawnEntity(entity, WorldManager.SPAWN_CAUSE)) {
             return entity;
-
         }
         return null;
     }
@@ -163,12 +158,8 @@ public class MultiEntityStructure {
         public <T extends Entity> boolean lateBind(String identifier, EntityType type, Vector3f offsetPos,
                 Class<T> entityClass,
                 Consumer<T> initializer) {
-            Optional<Entity> opEntity = this.world.createEntity(type, this.pos.toFloat().add(offsetPos).toDouble());
-            if (!opEntity.isPresent()) {
-                return false;
-            }
             @SuppressWarnings("unchecked")
-            T entity = (T) opEntity.get();
+            T entity = (T) this.world.createEntity(type, this.pos.toFloat().add(offsetPos).toDouble());
             initializer.accept(entity);
             return spawn(identifier, entity);
         }
@@ -189,10 +180,10 @@ public class MultiEntityStructure {
         }
 
         @Override
-        public void onEntityActivated(Entity entity, Player player) {}
+        public void onEntityActivated(Entity entity, Player player, HandType currHand) {}
 
         @Override
-        public void onEntityHit(Entity entity, Player player) {}
+        public void onEntityHit(Entity entity, Player player, HandType currHand) {}
 
         @Override
         public void onEntityRemoved(Entity entity) {

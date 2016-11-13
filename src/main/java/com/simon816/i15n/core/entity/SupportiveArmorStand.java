@@ -1,5 +1,6 @@
 package com.simon816.i15n.core.entity;
 
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.entity.ArmorStandData;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
@@ -22,7 +23,7 @@ public class SupportiveArmorStand<T extends Entity> {
         this.entity = entity;
         if (entity == null) {
             if (this.stand != null) {
-                this.stand.setPassenger(null);
+                this.stand.clearPassengers();
             }
             return false;
         }
@@ -68,21 +69,20 @@ public class SupportiveArmorStand<T extends Entity> {
             // For some reason setPassenger behaves differently
             return this.entity.setVehicle(this.stand).isSuccessful();
         }
-        this.stand = (ArmorStand) this.entity.getWorld()
-                .createEntity(EntityTypes.ARMOR_STAND, this.entity.getLocation().getPosition()).orElse(null);
-        if (this.stand == null) {
+        this.stand = (ArmorStand) this.entity.getWorld().createEntity(EntityTypes.ARMOR_STAND,
+                this.entity.getLocation().getPosition());
+        if (!this.stand.offer(Keys.HAS_GRAVITY, false).isSuccessful()) {
             return false;
         }
         ArmorStandData data = this.stand.getOrCreate(ArmorStandData.class).get();
-        data.set(data.gravity().set(false));
         data.set(data.basePlate().set(false));
         data.set(data.small().set(true));
         data.set(data.marker().set(true));
         if (!this.stand.offer(data).isSuccessful()) {
             return false;
         }
-        ImplUtil.setInvisible(this.stand, true);
-        if (!this.stand.setPassenger(this.entity).isSuccessful()) {
+        this.stand.tryOffer(Keys.INVISIBLE, true);
+        if (!this.stand.addPassenger(this.entity).isSuccessful()) {
             return false;
         }
         return true;

@@ -49,9 +49,13 @@ public class ObservableInventory extends InventoryDelegate {
     public interface SimpleObserver extends InventoryObserver {
         void onInventoryChange();
 
+        default void onInventoryChange(int index) {
+            onInventoryChange();
+        }
+
         @Override
         default void onChange(int index) {
-            onInventoryChange();
+            onInventoryChange(index);
         }
 
 
@@ -62,12 +66,12 @@ public class ObservableInventory extends InventoryDelegate {
 
         @Override
         default void onSet(int index) {
-            onInventoryChange();
+            onInventoryChange(index);
         }
 
         @Override
         default void onRemove(int index) {
-            onInventoryChange();
+            onInventoryChange(index);
         }
     }
 

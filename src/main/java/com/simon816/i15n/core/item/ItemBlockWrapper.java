@@ -1,6 +1,7 @@
 package com.simon816.i15n.core.item;
 
 import org.spongepowered.api.block.BlockSnapshot;
+import org.spongepowered.api.data.type.HandType;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -43,8 +44,8 @@ public class ItemBlockWrapper extends CustomItem {
      * Tells vanilla to use default behaviour so block placement works.
      */
     @Override
-    public boolean onItemUse(ItemStack itemStack, Player player, BlockSnapshot clickedBlock, Direction side,
-            Vector3d clickPoint) {
+    public boolean onItemUse(ItemStack itemStack, Player player, HandType currHand, BlockSnapshot clickedBlock,
+            Direction side, Vector3d clickPoint) {
         CustomBlockEventListeners.setItemBlockClicked(itemStack, player);
         return false; // Pass through to vanilla
     }

@@ -5,12 +5,9 @@ import org.spongepowered.common.item.inventory.util.ItemStackUtil;
 import com.simon816.i15n.core.inv.InventoryAdapter;
 import com.simon816.i15n.core.inv.InventoryProvider;
 
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.IChatComponent;
 
 public interface InternalInventoryWrapper extends IInventory, InventoryProvider {
 
@@ -57,31 +54,28 @@ public interface InternalInventoryWrapper extends IInventory, InventoryProvider 
         getInventory().clear();
     }
 
-    class Simple implements InternalInventoryWrapper {
+    class Basic extends InventoryBasic implements InternalInventoryWrapper {
 
         private final InventoryAdapter inv;
 
-        public Simple(InventoryAdapter inv) {
+        public Basic(String title, boolean customName, int slotCount, InventoryAdapter inv) {
+            super(title, customName, slotCount);
             this.inv = inv;
         }
 
         @Override
         public InventoryAdapter getInventory() {
-            return this.inv;
+            return inv;
         }
-
-        @Override
-        public int getSizeInventory() {
-            int size = InternalInventoryWrapper.super.getSizeInventory();
-            while (size % 9 != 0) {
-                size++;
-            }
-            return size;
-        }
-
 
         private boolean outOfRange(int index) {
             return index >= InternalInventoryWrapper.super.getSizeInventory();
+        }
+
+        @Override
+        public ItemStack addItem(ItemStack stack) {
+            // TODO Auto-generated method stub
+            return super.addItem(stack);
         }
 
         @Override
@@ -115,52 +109,6 @@ public interface InternalInventoryWrapper extends IInventory, InventoryProvider 
             }
             return InternalInventoryWrapper.super.decrStackSize(index, count);
         }
-
-        @Override
-        public void markDirty() {}
-
-        @Override
-        public boolean isUseableByPlayer(EntityPlayer player) {
-            return true;
-        }
-
-        @Override
-        public void openInventory(EntityPlayer player) {}
-
-        @Override
-        public void closeInventory(EntityPlayer player) {}
-
-        @Override
-        public boolean isItemValidForSlot(int index, ItemStack stack) {
-            return true;
-        }
-
-        @Override
-        public int getField(int id) {
-            return 0;
-        }
-
-        @Override
-        public void setField(int id, int value) {}
-
-        @Override
-        public int getFieldCount() {
-            return 0;
-        }
-
-        @Override
-        public String getName() {
-            return "container.chest";
-        }
-
-        @Override
-        public boolean hasCustomName() {
-            return false;
-        }
-
-        @Override
-        public IChatComponent getDisplayName() {
-            return hasCustomName() ? new ChatComponentText(getName()) : new ChatComponentTranslation(getName());
-        }
     }
+
 }

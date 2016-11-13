@@ -13,6 +13,7 @@ import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.block.tileentity.Piston;
 import org.spongepowered.api.data.Transaction;
 import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.data.type.HandType;
 import org.spongepowered.api.data.type.PistonTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -35,6 +36,7 @@ import org.spongepowered.api.world.World;
 import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
 import com.simon816.i15n.core.TickHelper;
+import com.simon816.i15n.core.Utils;
 import com.simon816.i15n.core.item.CustomItem;
 import com.simon816.i15n.core.item.ItemBlockWrapper;
 import com.simon816.i15n.core.tile.BlockData;
@@ -150,39 +152,28 @@ public class CustomBlockEventListeners {
 
     @Listener
     public void onBlockInteract(InteractBlockEvent event, @First Player player) {
+        HandType hand = Utils.getEventHand(event);
         BlockSnapshot blockSnapshot = event.getTargetBlock();
         if (blockSnapshot == BlockSnapshot.NONE) {
-            // boolean isCreative = player.gameMode().get() == GameModes.CREATIVE;
-            // double blockReachDistance = isCreative ? 5F : 4.5F;
-            // MovingObjectPosition res = RayTrace.traceEntity2((Entity) player, blockReachDistance,
-            // isCreative);
             return;
         }
-
         CustomWorld world = WorldManager.toCustomWorld(player.getWorld());
         Vector3i pos = blockSnapshot.getPosition();
         BlockNature block = world.getBlock(pos);
-        if (block == null)
-
-        {
+        if (block == null) {
             return;
         }
-
         Direction side = event.getTargetSide();
         Vector3d point = event.getInteractionPoint().orElse(null);
         boolean allowInteract = !event.isCancelled();
-        if (event instanceof InteractBlockEvent.Primary)
-
-        {
-            allowInteract = block.onBlockHit(world, pos, player, side, point);
-        } else if (event instanceof InteractBlockEvent.Secondary)
-
-        {
-            if (player.getItemInHand().isPresent() && player.get(Keys.IS_SNEAKING).get()) {
+        if (event instanceof InteractBlockEvent.Primary) {
+            allowInteract = block.onBlockHit(world, pos, player, hand, side, point);
+        } else if (event instanceof InteractBlockEvent.Secondary) {
+            if (player.getItemInHand(hand).isPresent() && player.get(Keys.IS_SNEAKING).get()) {
                 // Pass on the item click without telling the block
                 allowInteract = true;
             } else {
-                allowInteract = block.onBlockActivated(world, pos, player, side, point);
+                allowInteract = block.onBlockActivated(world, pos, player, hand, side, point);
             }
         }
         event.setCancelled(!allowInteract);

@@ -7,6 +7,8 @@ import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.entity.ArmorStandData;
+import org.spongepowered.api.data.type.HandType;
+import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.FallingBlock;
@@ -54,8 +56,8 @@ public class TurtleEntity extends CustomEntity implements EntityTracker {
     }
 
     @Override
-    public void onEntityActivated(Entity entity, Player player) {
-        if (ItemWrench.isPlayerUsing(player)) {
+    public void onEntityActivated(Entity entity, Player player, HandType currHand) {
+        if (ItemWrench.isPlayerUsing(player, currHand)) {
             ImplUtil.showWritableBook(player, Lists.newArrayList(this.task.getCode()), newLines -> {
                 if (!newLines.isEmpty()) {
                     Utils.runLater(() -> this.task.setCode(newLines.get(0)));
@@ -65,7 +67,7 @@ public class TurtleEntity extends CustomEntity implements EntityTracker {
     }
 
     @Override
-    public void onEntityHit(Entity entity, Player player) {
+    public void onEntityHit(Entity entity, Player player, HandType currHand) {
         remove();
         Optional<String> dropRule = this.world.getGameRule("doEntityDrops");
         if (player.gameMode().get() != GameModes.CREATIVE && (!dropRule.isPresent()
@@ -75,13 +77,10 @@ public class TurtleEntity extends CustomEntity implements EntityTracker {
     }
 
     private void dropAsItem() {
-        Optional<Entity> opEntity = this.world.createEntity(EntityTypes.ITEM, this.pos.add(0.5, 0.5, 0.5));
-        if (!opEntity.isPresent()) {
-            return;
-        }
+        Entity item = this.world.createEntity(EntityTypes.ITEM, this.pos.add(0.5, 0.5, 0.5));
         ItemStack stack = ItemRegistry.get("turtle").createItemStack();
-        opEntity.get().offer(Keys.REPRESENTED_ITEM, stack.createSnapshot());
-        this.world.spawnEntity(opEntity.get(), WorldManager.SPAWN_CAUSE);
+        item.offer(Keys.REPRESENTED_ITEM, stack.createSnapshot());
+        this.world.spawnEntity(item, WorldManager.SPAWN_CAUSE);
     }
 
     @Override
@@ -133,8 +132,7 @@ public class TurtleEntity extends CustomEntity implements EntityTracker {
 
     private boolean createInternalEntities(CustomWorld world) {
         if (!this.block.hasEntity()) {
-            FallingBlock actualBlock =
-                    (FallingBlock) this.world.createEntity(EntityTypes.FALLING_BLOCK, this.pos).orElse(null);
+            FallingBlock actualBlock = (FallingBlock) this.world.createEntity(EntityTypes.FALLING_BLOCK, this.pos);
             if (!this.block.setEntity(actualBlock, true)) {
                 return false;
             }
@@ -147,20 +145,16 @@ public class TurtleEntity extends CustomEntity implements EntityTracker {
             actualBlock.offer(Keys.CAN_DROP_AS_ITEM, false);
         }
         if (this.pickaxeStand == null) {
-            this.pickaxeStand =
-                    (ArmorStand) this.world.createEntity(EntityTypes.ARMOR_STAND, getPickaxePos()).orElse(null);
-            if (this.pickaxeStand == null) {
-                return false;
-            }
+            this.pickaxeStand = (ArmorStand) this.world.createEntity(EntityTypes.ARMOR_STAND, getPickaxePos());
             ArmorStandData data = this.pickaxeStand.getOrCreate(ArmorStandData.class).get();
-            data.set(data.gravity().set(false));
             data.set(data.basePlate().set(false));
             // data.set(data.marker().set(true));
             this.pickaxeStand.offer(data);
-            ImplUtil.setInvisible(this.pickaxeStand, true);
+            this.pickaxeStand.offer(Keys.HAS_GRAVITY, false);
+            this.pickaxeStand.tryOffer(Keys.INVISIBLE, true);
             this.pickaxeStand.setRotation(getPickaxeRot());
             this.pickaxeStand.offer(Keys.RIGHT_ARM_ROTATION, new Vector3d(-45, 0, 0));
-            this.pickaxeStand.setItemInHand(ItemStack.of(ItemTypes.DIAMOND_PICKAXE, 1));
+            this.pickaxeStand.setItemInHand(HandTypes.MAIN_HAND, ItemStack.of(ItemTypes.DIAMOND_PICKAXE, 1));
             world.addEntityToTracker(this.pickaxeStand, this);
             this.tracker.add("toolStand", this.pickaxeStand);
         }
@@ -214,6 +208,7 @@ public class TurtleEntity extends CustomEntity implements EntityTracker {
             this.block.remove();
             return false;
         }
+        hackBlockFalling();
         // Ensure tracked (e.g. if set from readFrom)
         world.addEntityToTracker(this.block.getEntity(), this);
         world.addEntityToTracker(this.block.getStand(), this);

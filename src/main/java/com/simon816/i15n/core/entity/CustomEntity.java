@@ -7,7 +7,6 @@ import org.spongepowered.api.world.World;
 import com.flowpowered.math.vector.Vector3d;
 import com.simon816.i15n.core.ITickable;
 import com.simon816.i15n.core.Serialized;
-import com.simon816.i15n.core.Utils;
 import com.simon816.i15n.core.world.CustomWorld;
 
 
@@ -65,8 +64,8 @@ public abstract class CustomEntity implements CatalogType, ITickable, Serialized
     @Override
     public void writeTo(DataView data) {
         data.set(of("id"), getId());
-        data.set(of("position"), Utils.s(this.pos));
-        data.set(of("rotation"), Utils.s(this.rotation));
+        data.set(of("position"), this.pos);
+        data.set(of("rotation"), this.rotation);
     }
 
 }

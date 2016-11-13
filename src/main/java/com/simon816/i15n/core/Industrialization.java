@@ -173,7 +173,7 @@ public class Industrialization {
             return;
         }
         Path path = getPathForWorld(world.getUniqueId());
-        OutputStream stream = Files.newOutputStream(path);
+        OutputStream stream = Files.newOutputStream(path, StandardOpenOption.WRITE);
         try {
             stream = new GZIPOutputStream(stream);
             DataFormats.NBT.writeTo(stream, data);

@@ -7,10 +7,11 @@ import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataView;
+import org.spongepowered.api.data.Transaction;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.entity.ArmorStandData;
+import org.spongepowered.api.data.type.HandType;
 import org.spongepowered.api.entity.Entity;
-import org.spongepowered.api.entity.EntitySnapshot;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.ArmorStand;
 import org.spongepowered.api.entity.living.player.Player;
@@ -25,6 +26,7 @@ import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.util.Axis;
 import org.spongepowered.api.util.Direction;
+import org.spongepowered.api.world.BlockChangeFlag;
 import org.spongepowered.api.world.World;
 
 import com.flowpowered.math.vector.Vector3d;
@@ -53,10 +55,10 @@ public class PipeBlock extends EnhancedCustomBlock {
 
     private void setupArmorStand(ArmorStand stand, Vector3d rotation) {
         ArmorStandData data = stand.getOrCreate(ArmorStandData.class).get();
-        data.set(data.gravity().set(false));
         data.set(data.basePlate().set(false));
         data.set(data.marker().set(true));
         stand.offer(data);
+        stand.offer(Keys.HAS_GRAVITY, false);
         if (rotation != null) {
             stand.offer(Keys.HEAD_ROTATION, rotation);
         }
@@ -71,7 +73,7 @@ public class PipeBlock extends EnhancedCustomBlock {
         // entStand.setEntityBoundingBox(new AxisAlignedBB(bb.minX, bb.minY, bb.minZ,
         // bb.minX + 0.5, bb.minY + 0.5, bb.minZ + 0.5));
 
-        ImplUtil.setInvisible(stand, true);
+        stand.tryOffer(Keys.INVISIBLE, true);
     }
 
     public PipeBlock() {
@@ -101,9 +103,9 @@ public class PipeBlock extends EnhancedCustomBlock {
     }
 
     private static Vector3f armorStandOffset(boolean isHeadFlat, Axis facingAxis, Vector3f off) {
-        Vector3f v = new Vector3f(isHeadFlat && facingAxis == Axis.X ? -0.25 : 0, -1.5 + 0.125,
-                isHeadFlat && facingAxis == Axis.Z ? -0.25 : 0).add(off);
-        return new Vector3f(v.getX(), -1, v.getZ()); // Force y=-1 because stupid hitbox (MC-74686)
+        return new Vector3f(isHeadFlat && facingAxis == Axis.X ? -0.75 : facingAxis == Axis.X ? -0.25 : 0,
+                isHeadFlat ? -1.69 : -1.89,
+                isHeadFlat && facingAxis == Axis.Z ? -0.75 : facingAxis == Axis.Z ? 0.295 : 0).add(off);
     }
 
     @Override
@@ -124,18 +126,24 @@ public class PipeBlock extends EnhancedCustomBlock {
     }
 
     @Override
-    public boolean onBlockActivated(CustomWorld world, Vector3i pos, Player player, Direction side,
+    public boolean onBlockActivated(CustomWorld world, Vector3i pos, Player player, HandType currHand, Direction side,
             Vector3d clickPoint) {
         return true;
     }
 
     @Override
-    public boolean onBlockHit(CustomWorld world, Vector3i pos, Player player, Direction side, Vector3d clickPoint) {
+    public boolean onBlockHit(CustomWorld world, Vector3i pos, Player player, HandType currHand, Direction side,
+            Vector3d clickPoint) {
         Cause breakCause = Cause.builder()
                 .named("plugin", Industrialization.toContainer())
                 .named(NamedCause.SOURCE, player)
                 .build();
-        world.getWorld().setBlockType(pos, BlockTypes.AIR, true, breakCause);
+        world.getWorld().setBlockType(pos, BlockTypes.AIR, BlockChangeFlag.ALL, breakCause);
+        // Sponge broke and doesn't fire the event (SpongeCommon#998)
+        BlockSnapshot from = world.getWorld().createSnapshot(pos);
+        BlockSnapshot to = from.withState(BlockTypes.AIR.getDefaultState());
+        List<Transaction<BlockSnapshot>> tr = Lists.newArrayList(new Transaction<>(from, to));
+        Sponge.getEventManager().post(SpongeEventFactory.createChangeBlockEventBreak(breakCause, world.getWorld(), tr));
         return false;
     }
 
@@ -146,7 +154,7 @@ public class PipeBlock extends EnhancedCustomBlock {
         if (player == null || player.gameMode().get() != GameModes.CREATIVE) {
             fireDropItemEvent(world.getWorld(), pos);
         }
-        ImplUtil.playBlockBreakSound(world.getWorld(), pos, BlockTypes.GLASS.getDefaultState());
+        ImplUtil.playBlockBreakSound(world.getWorld(), pos, BlockTypes.GLASS.getDefaultState(), player);
         return true;
     }
 
@@ -156,19 +164,16 @@ public class PipeBlock extends EnhancedCustomBlock {
             return;
         }
         List<Entity> entities = Lists.newArrayList();
-        List<EntitySnapshot> snapshots = Lists.newArrayList();
         for (ItemStack stack : stacks) {
             Entity drop = createItemDrop(world, pos, stack);
             entities.add(drop);
-            snapshots.add(drop.createSnapshot());
         }
         Cause cause = Cause.source(BlockSpawnCause.builder()
                 .type(SpawnTypes.DROPPED_ITEM)
                 .block(world.createSnapshot(pos))
                 .build())
                 .build();
-        DropItemEvent.Destruct harvestEvent =
-                SpongeEventFactory.createDropItemEventDestruct(cause, entities, snapshots, world);
+        DropItemEvent.Destruct harvestEvent = SpongeEventFactory.createDropItemEventDestruct(cause, entities, world);
         if (Sponge.getEventManager().post(harvestEvent)) {
             return;
         }
@@ -265,10 +270,11 @@ public class PipeBlock extends EnhancedCustomBlock {
         } else if (s1Side == Direction.DOWN) {
             offset = new Vector3f(0.5, -0.2, 0.2);
         } else {
-            offset = new Vector3f(0.5, 0.8, 0.2);
+            offset = new Vector3f(0.75, 0.8, 0.5);
         }
         Vector3f offsetPos =
-                armorStandOffset(false, s1Side == Direction.WEST || s1Side == Direction.EAST ? Axis.Z : Axis.X, offset);
+                armorStandOffset(false, s1Side == Direction.WEST || s1Side == Direction.EAST || s1Side == Direction.DOWN
+                        ? Axis.Z : Axis.X, offset);
 
         struct1.lateBind(shareId(s1Side, 1), EntityTypes.ARMOR_STAND, offsetPos, ArmorStand.class,
                 stand -> setupArmorStand(stand, rot));
@@ -292,16 +298,16 @@ public class PipeBlock extends EnhancedCustomBlock {
                 }
             } else {
                 if (s1Side == Direction.NORTH) {
-                    offset = new Vector3f(0.75, 0.2, 0.3);
+                    offset = new Vector3f(1.3, 0.2, 0.75);
                 } else {
-                    offset = new Vector3f(0.75, 0.2, 1.3);
+                    offset = new Vector3f(1.3, 0.2, 1.75);
                 }
             }
             offsetPos = armorStandOffset(true, Axis.Z, offset);
             rot2 = rot2.add(90, 0, 0);
         } else {
             rot2 = rot2.add(0, 90, 0);
-            offsetPos = offsetPos.add(-0.3, 0, -0.3);
+            offsetPos = offsetPos.add(0.05, 0, -0.59);
         }
         Vector3d finalRot2 = rot2;
 
@@ -309,10 +315,9 @@ public class PipeBlock extends EnhancedCustomBlock {
                 stand -> setupArmorStand(stand, finalRot2));
 
         if (s1Side != Direction.UP && s1Side != Direction.DOWN) {
-            // commented out to keep y=-1 (MC-74686)
-            // offsetPos = offsetPos.add(0, 0.5375, 0);
+            offsetPos = offsetPos.add(0, 0.5375, 0);
         } else {
-            offsetPos = offsetPos.add(0.6, 0, 0);
+            offsetPos = offsetPos.add(-0.6, 0, 0);
         }
 
         struct1.lateBind(shareId(s1Side, 4), EntityTypes.ARMOR_STAND, offsetPos, ArmorStand.class,

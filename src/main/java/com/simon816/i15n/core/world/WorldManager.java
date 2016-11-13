@@ -110,7 +110,7 @@ public class WorldManager {
                 DataView blockDataView = blockList.next();
                 Vector3i pos = entry.getKey();
                 BlockNature block = entry.getValue();
-                blockDataView.set(of("position"), Utils.s(pos));
+                blockDataView.set(of("position"), pos);
                 DataView blockView = blockDataView.createView(of("block"));
                 blockView.set(of("id"), block.getId());
                 block.writeDataAt(this, pos, blockView);

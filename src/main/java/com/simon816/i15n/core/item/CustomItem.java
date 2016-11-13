@@ -7,6 +7,7 @@ import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.data.type.HandType;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -52,8 +53,8 @@ public abstract class CustomItem implements CatalogType {
         return null;
     }
 
-    public boolean onItemUse(ItemStack itemStack, Player player, BlockSnapshot clickedBlock, Direction side,
-            Vector3d clickPoint) {
+    public boolean onItemUse(ItemStack itemStack, Player player, HandType currHand, BlockSnapshot clickedBlock,
+            Direction side, Vector3d clickPoint) {
         return false;
     }
 

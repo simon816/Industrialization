@@ -1,5 +1,6 @@
 package com.simon816.i15n.core.inv;
 
+import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 
 import com.simon816.i15n.core.Serialized;
@@ -34,5 +35,7 @@ public interface InventoryAdapter extends Serialized {
     default int stackSizeLimit() {
         return 64;
     }
+
+    Inventory getAPIInventory();
 
 }

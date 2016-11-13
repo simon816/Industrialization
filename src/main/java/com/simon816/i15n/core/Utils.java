@@ -9,6 +9,11 @@ import org.spongepowered.api.block.tileentity.carrier.TileEntityCarrier;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.MemoryDataContainer;
+import org.spongepowered.api.data.type.HandType;
+import org.spongepowered.api.data.type.HandTypes;
+import org.spongepowered.api.event.action.InteractEvent;
+import org.spongepowered.api.event.block.InteractBlockEvent;
+import org.spongepowered.api.event.entity.InteractEntityEvent;
 import org.spongepowered.api.util.Direction;
 import org.spongepowered.api.world.World;
 
@@ -41,11 +46,6 @@ public class Utils {
         return new MemoryDataContainer();
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T> DataView s(T obj) {
-        return Sponge.getDataManager().getSerializer((Class<T>) obj.getClass()).get().serialize(obj);
-    }
-
     public static Direction rotationToDirection(double rotation) {
         rotation = Math.round(rotation);
         if (rotation < 45 || rotation > 315) {
@@ -71,6 +71,22 @@ public class Utils {
                 first.set(valueEntry.getKey(), valueEntry.getValue());
             }
         }
+    }
+
+    public static HandType getEventHand(InteractEvent event) {
+        HandType hand;
+        if (event instanceof InteractBlockEvent.Primary.OffHand) {
+            hand = HandTypes.OFF_HAND;
+        } else if (event instanceof InteractBlockEvent.Secondary.OffHand) {
+            hand = HandTypes.OFF_HAND;
+        } else if (event instanceof InteractEntityEvent.Primary.OffHand) {
+            hand = HandTypes.OFF_HAND;
+        } else if (event instanceof InteractEntityEvent.Secondary.OffHand) {
+            hand = HandTypes.OFF_HAND;
+        } else {
+            hand = HandTypes.MAIN_HAND;
+        }
+        return hand;
     }
 
 }

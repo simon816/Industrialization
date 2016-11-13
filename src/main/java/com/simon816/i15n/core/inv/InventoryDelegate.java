@@ -1,6 +1,7 @@
 package com.simon816.i15n.core.inv;
 
 import org.spongepowered.api.data.DataView;
+import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 
 public class InventoryDelegate implements InventoryAdapter {
@@ -14,6 +15,11 @@ public class InventoryDelegate implements InventoryAdapter {
     @Override
     public SidedInventory asSided() {
         return this.inv.asSided();
+    }
+
+    @Override
+    public Inventory getAPIInventory() {
+        return this.inv.getAPIInventory();
     }
 
     @Override

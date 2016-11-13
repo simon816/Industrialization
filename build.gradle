@@ -18,7 +18,7 @@ apply plugin: 'eclipse'
 sourceCompatibility = "1.8"
 targetCompatibility = "1.8"
 
-version = "0.0.1"
+version = "0.0.2"
 
 group = "com.simon816.i15n"
 
@@ -37,8 +37,8 @@ repositories {
 }
 
 dependencies {
-    compile 'org.spongepowered:spongeapi:4.2.0-SNAPSHOT'
-    compile 'org.spongepowered:spongeforge:1.8.9-1890-4.2.0-BETA-1762:dev'
+    compile 'org.spongepowered:spongeapi:5.0.0'
+    compile 'org.spongepowered:spongeforge:1.10.2-2098-5.0.0-BETA-1808:dev'
 }
 
 compileJava.options.encoding = 'UTF-8'
@@ -46,9 +46,9 @@ compileJava.options.encoding = 'UTF-8'
 compileJava.options.compilerArgs += '-proc:none'
 
 minecraft {
-    version = "1890"
+    version = "2098"
     runDir = "run"
-    mappings = "stable_22"
+    mappings = "stable_26"
 }
 
 processResources {

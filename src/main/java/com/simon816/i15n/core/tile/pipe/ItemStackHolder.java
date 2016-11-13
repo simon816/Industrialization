@@ -1,6 +1,6 @@
 package com.simon816.i15n.core.tile.pipe;
 
-import java.util.Optional;
+import java.util.List;
 import java.util.UUID;
 
 import org.spongepowered.api.data.DataView;
@@ -17,7 +17,6 @@ import org.spongepowered.api.world.World;
 import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
 import com.simon816.i15n.core.ImplUtil;
-import com.simon816.i15n.core.Utils;
 import com.simon816.i15n.core.tile.PipeTileData;
 import com.simon816.i15n.core.world.WorldManager;
 
@@ -167,9 +166,9 @@ public class ItemStackHolder implements PipeObject {
     @Override
     public void drop(World world, Vector3i pipePos) {
         if (this.itemStand != null) {
-            Optional<Entity> p = this.itemStand.getPassenger();
-            if (p.isPresent()) {
-                Item item = (Item) p.get();
+            List<Entity> passengers = this.itemStand.getPassengers();
+            for (Entity p : passengers) {
+                Item item = (Item) p;
                 item.setVehicle(null);
                 ImplUtil.setPickupDelay(item, 10); // 10 is default
                 ImplUtil.setDespawnTime(item, 6000); // 6000 is default
@@ -187,11 +186,11 @@ public class ItemStackHolder implements PipeObject {
     @Override
     public void destroy() {
         if (this.itemStand != null) {
-            Optional<Entity> p = this.itemStand.getPassenger();
-            if (p.isPresent()) {
-                p.get().remove();
+            List<Entity> passengers = this.itemStand.getPassengers();
+            for (Entity p : passengers) {
+                p.remove();
             }
-            this.itemStand.setPassenger(null);
+            this.itemStand.clearPassengers();
             this.itemStand.remove();
             this.itemStand = null;
         }
@@ -226,15 +225,8 @@ public class ItemStackHolder implements PipeObject {
             }
         }
         this.itemStand = createStand(world, this.pos);
-        if (this.itemStand == null) {
-            return;// Create stand failed
-        }
         Item itemEntity = createItem(world, this.pos, this.stack, true);
-        if (itemEntity == null) {
-            this.itemStand = null;
-            return; // Create item failed
-        }
-        if (!this.itemStand.setPassenger(itemEntity).isSuccessful()) {
+        if (!this.itemStand.addPassenger(itemEntity).isSuccessful()) {
             this.itemStand = null;
             return; // Attach passenger failed
         }
@@ -249,27 +241,19 @@ public class ItemStackHolder implements PipeObject {
     }
 
     private static ArmorStand createStand(World world, Vector3d pos) {
-        Optional<Entity> opStand = world.createEntity(EntityTypes.ARMOR_STAND, pos);
-        if (!opStand.isPresent()) {
-            return null;
-        }
-        ArmorStand stand = (ArmorStand) opStand.get();
+        ArmorStand stand = (ArmorStand) world.createEntity(EntityTypes.ARMOR_STAND, pos);
         ArmorStandData data = stand.getOrCreate(ArmorStandData.class).get();
         data.set(data.small().set(true));
-        data.set(data.gravity().set(false));
         data.set(data.basePlate().set(false));
         data.set(data.marker().set(true));
         stand.offer(data);
-        ImplUtil.setInvisible(stand, true);
+        stand.offer(Keys.HAS_GRAVITY, false);
+        stand.tryOffer(Keys.INVISIBLE, true);
         return stand;
     }
 
     private static Item createItem(World world, Vector3d pos, ItemStack stack, boolean noPickup) {
-        Optional<Entity> opItem = world.createEntity(EntityTypes.ITEM, pos);
-        if (!opItem.isPresent()) {
-            return null;
-        }
-        Item itemEntity = (Item) opItem.get();
+        Item itemEntity = (Item) world.createEntity(EntityTypes.ITEM, pos);
         itemEntity.offer(Keys.REPRESENTED_ITEM, stack.createSnapshot());
         if (noPickup) {
             ImplUtil.setInfinitePickupDelay(itemEntity);
@@ -281,7 +265,7 @@ public class ItemStackHolder implements PipeObject {
     @Override
     public void writeTo(DataView data) {
         data.set(of("item"), this.stack);
-        data.set(of("position"), Utils.s(this.pos));
+        data.set(of("position"), this.pos);
         data.set(of("from"), this.from.name());
         data.set(of("destination"), this.dest.name());
         data.set(of("speed"), this.speed);

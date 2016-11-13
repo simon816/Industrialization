@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.data.DataView;
+import org.spongepowered.api.data.type.HandType;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -39,10 +40,10 @@ public interface BlockNature extends CatalogType {
 
     boolean onBlockBreak(CustomWorld world, Vector3i pos, Player player);
 
-    boolean onBlockActivated(CustomWorld world, Vector3i pos, Player player, Direction side,
+    boolean onBlockActivated(CustomWorld world, Vector3i pos, Player player, HandType currHand, Direction side,
             @Nullable Vector3d clickPoint);
 
-    boolean onBlockHit(CustomWorld world, Vector3i pos, Player player, Direction side,
+    boolean onBlockHit(CustomWorld world, Vector3i pos, Player player, HandType currHand, Direction side,
             @Nullable Vector3d clickPoint);
 
     boolean onBlockHarvest(CustomWorld world, Vector3i pos, List<Entity> droppedEntities);

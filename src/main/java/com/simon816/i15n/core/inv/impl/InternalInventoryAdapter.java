@@ -1,6 +1,8 @@
 package com.simon816.i15n.core.inv.impl;
 
 import org.spongepowered.api.data.DataView;
+import org.spongepowered.api.item.inventory.Carrier;
+import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.common.item.inventory.util.ItemStackUtil;
 
@@ -22,6 +24,14 @@ public class InternalInventoryAdapter implements InventoryAdapter {
 
     private static ItemStack toApi(net.minecraft.item.ItemStack stack) {
         return ItemStackUtil.fromNative(stack);
+    }
+
+    @Override
+    public Inventory getAPIInventory() {
+        if (this.inventory instanceof Inventory) {
+            return (Inventory) this.inventory;
+        }
+        return null; // TODO
     }
 
     @Override
@@ -79,5 +89,12 @@ public class InternalInventoryAdapter implements InventoryAdapter {
     public void writeTo(DataView data) {
         // TODO Auto-generated method stub
 
+    }
+
+    public static InternalInventoryAdapter from(Carrier carrier) {
+        if (carrier instanceof IInventory) {
+            return new InternalInventoryAdapter((IInventory) carrier);
+        }
+        return null;
     }
 }

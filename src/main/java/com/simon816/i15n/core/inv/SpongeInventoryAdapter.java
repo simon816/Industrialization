@@ -7,18 +7,14 @@ import org.spongepowered.api.item.inventory.ItemStack;
 
 import com.simon816.i15n.core.inv.impl.InternalInventoryAdapter;
 
-import net.minecraft.inventory.IInventory;
-
 public class SpongeInventoryAdapter implements InventoryAdapter {
 
     public static InventoryAdapter forCarrier(Carrier carrier) {
         try {
             return new SpongeInventoryAdapter(carrier.getInventory());
         } catch (AbstractMethodError e) {
-            if (carrier instanceof IInventory) {
-                return new InternalInventoryAdapter((IInventory) carrier);
-            }
-            return null;
+            e.printStackTrace();
+            return InternalInventoryAdapter.from(carrier);
         }
     }
 
@@ -26,6 +22,11 @@ public class SpongeInventoryAdapter implements InventoryAdapter {
 
     public SpongeInventoryAdapter(Inventory inventory) {
         this.inventory = inventory;
+    }
+
+    @Override
+    public Inventory getAPIInventory() {
+        return this.inventory;
     }
 
     @Override
@@ -55,7 +56,7 @@ public class SpongeInventoryAdapter implements InventoryAdapter {
 
     @Override
     public boolean isEmpty() {
-        return this.inventory.isEmpty();
+        return this.inventory.size() == 0;
     }
 
     @Override

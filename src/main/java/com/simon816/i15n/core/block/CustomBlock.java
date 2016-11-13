@@ -1,10 +1,10 @@
 package com.simon816.i15n.core.block;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.data.type.HandType;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.player.Player;
@@ -35,13 +35,14 @@ public abstract class CustomBlock implements BlockNature {
     }
 
     @Override
-    public boolean onBlockActivated(CustomWorld world, Vector3i pos, Player player, Direction side,
+    public boolean onBlockActivated(CustomWorld world, Vector3i pos, Player player, HandType currHand, Direction side,
             Vector3d clickPoint) {
         return false;
     }
 
     @Override
-    public boolean onBlockHit(CustomWorld world, Vector3i pos, Player player, Direction side, Vector3d clickPoint) {
+    public boolean onBlockHit(CustomWorld world, Vector3i pos, Player player, HandType currHand, Direction side,
+            Vector3d clickPoint) {
         return true;
     }
 
@@ -65,12 +66,9 @@ public abstract class CustomBlock implements BlockNature {
     }
 
     protected Entity createItemDrop(World world, Vector3i pos, ItemStack stack) {
-        Optional<Entity> opEntity = world.createEntity(EntityTypes.ITEM, pos.toDouble().add(0.5, 0.5, 0.5));
-        if (opEntity.isPresent()) {
-            opEntity.get().offer(Keys.REPRESENTED_ITEM, stack.createSnapshot());
-            return opEntity.get();
-        }
-        return null;
+        Entity entity = world.createEntity(EntityTypes.ITEM, pos.toDouble().add(0.5, 0.5, 0.5));
+        entity.offer(Keys.REPRESENTED_ITEM, stack.createSnapshot());
+        return entity;
     }
 
     @Override

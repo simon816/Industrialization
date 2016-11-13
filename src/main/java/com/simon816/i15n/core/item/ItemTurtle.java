@@ -1,6 +1,7 @@
 package com.simon816.i15n.core.item;
 
 import org.spongepowered.api.block.BlockSnapshot;
+import org.spongepowered.api.data.type.HandType;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.item.ItemType;
@@ -26,8 +27,8 @@ public class ItemTurtle extends CustomItem {
     }
 
     @Override
-    public boolean onItemUse(ItemStack itemStack, Player player, BlockSnapshot clickedBlock, Direction side,
-            Vector3d hitPoint) {
+    public boolean onItemUse(ItemStack itemStack, Player player, HandType currHand, BlockSnapshot clickedBlock,
+            Direction side, Vector3d hitPoint) {
         CustomWorld world = WorldManager.toCustomWorld(player.getWorld());
         Vector3d pos;
         if (hitPoint == null) {
@@ -45,7 +46,7 @@ public class ItemTurtle extends CustomItem {
                 if (itemStack.getQuantity() == 0) {
                     itemStack = null;
                 }
-                player.setItemInHand(itemStack);
+                player.setItemInHand(currHand, itemStack);
             }
         }
         return false;
