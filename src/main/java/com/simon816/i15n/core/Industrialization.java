@@ -39,9 +39,11 @@ import com.simon816.i15n.core.block.PipeBlock;
 import com.simon816.i15n.core.data.CustomItemData;
 import com.simon816.i15n.core.entity.EntityEventListeners;
 import com.simon816.i15n.core.entity.EntityRegistry;
+import com.simon816.i15n.core.entity.display.MonitorEntity;
 import com.simon816.i15n.core.entity.turtle.TurtleEntity;
 import com.simon816.i15n.core.inv.InventoryEventListeners;
 import com.simon816.i15n.core.item.CustomItemEventListeners;
+import com.simon816.i15n.core.item.ItemMonitor;
 import com.simon816.i15n.core.item.ItemRegistry;
 import com.simon816.i15n.core.item.ItemTurtle;
 import com.simon816.i15n.core.item.ItemWrench;
@@ -107,6 +109,9 @@ public class Industrialization {
         EntityRegistry.register("turtle", TurtleEntity.class);
 
         ItemRegistry.register("wrench", new ItemWrench());
+
+        ItemRegistry.register("monitor", new ItemMonitor());
+        EntityRegistry.register("monitor", MonitorEntity.class, world -> new MonitorEntity(world.getWorld(), 0, 0));
     }
 
     private void registerRecipes() {

@@ -33,6 +33,7 @@ import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.network.play.server.SPacketSetSlot;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.storage.MapData;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 /**
@@ -143,6 +144,21 @@ public class ImplUtil {
         }
     };
 
+    public static int getUniqueDataId(World world, String key) {
+        return ((net.minecraft.world.World) world).getUniqueDataId(key);
+    }
+
+    public static MapData loadMapData(World world, String key) {
+        return (MapData) ((net.minecraft.world.World) world).loadData(MapData.class, key);
+    }
+
+    public static void setWorldData(World world, String key, MapData mapdata) {
+        ((net.minecraft.world.World) world).setData(key, mapdata);
+    }
+
+    public static void setItemDamage(ItemStack stack, int value) {
+        ItemStackUtil.toNative(stack).setItemDamage(value);
+    }
 
     // Sponge can't seem to handle registering recipies in POST_INIT
     public static void registerRecipe(ShapedCraftingRecipe recipe) {

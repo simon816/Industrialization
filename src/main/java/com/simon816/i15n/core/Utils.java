@@ -6,9 +6,9 @@ import java.util.Optional;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.tileentity.TileEntity;
 import org.spongepowered.api.block.tileentity.carrier.TileEntityCarrier;
+import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataView;
-import org.spongepowered.api.data.MemoryDataContainer;
 import org.spongepowered.api.data.type.HandType;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.event.action.InteractEvent;
@@ -43,7 +43,7 @@ public class Utils {
     }
 
     public static DataView emptyData() {
-        return new MemoryDataContainer();
+        return DataContainer.createNew();
     }
 
     public static Direction rotationToDirection(double rotation) {
@@ -58,6 +58,19 @@ public class Utils {
             return Direction.NORTH;
         }
         return Direction.EAST;
+    }
+
+        public static double directionToRotation(Direction direction) {
+        if (direction == Direction.NORTH) {
+            return 180;
+        } else if (direction == Direction.EAST) {
+            return 270;
+        } else if (direction == Direction.SOUTH) {
+            return 0;
+        } else if (direction == Direction.WEST) {
+            return 90;
+        }
+        return -1;
     }
 
     public static void runLater(Runnable runnable) {
