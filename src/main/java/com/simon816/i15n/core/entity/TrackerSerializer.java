@@ -2,6 +2,7 @@ package com.simon816.i15n.core.entity;
 
 import static org.spongepowered.api.data.DataQuery.of;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 
@@ -20,12 +21,20 @@ public class TrackerSerializer {
         this.entities.put(identifier, entity);
     }
 
+    public Entity get(String identifier) {
+        return this.entities.get(identifier);
+    }
+
+    public Collection<Entity> getAll() {
+        return this.entities.values();
+    }
+
     public void remove(String identifier) {
         this.entities.remove(identifier);
     }
 
-    public Entity get(String identifier) {
-        return this.entities.get(identifier);
+    public void clear() {
+        this.entities.clear();
     }
 
     public void readFrom(World world, DataView data) {

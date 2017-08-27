@@ -143,7 +143,7 @@ public class PipeBlock extends EnhancedCustomBlock {
         BlockSnapshot from = world.getWorld().createSnapshot(pos);
         BlockSnapshot to = from.withState(BlockTypes.AIR.getDefaultState());
         List<Transaction<BlockSnapshot>> tr = Lists.newArrayList(new Transaction<>(from, to));
-        Sponge.getEventManager().post(SpongeEventFactory.createChangeBlockEventBreak(breakCause, world.getWorld(), tr));
+        Sponge.getEventManager().post(SpongeEventFactory.createChangeBlockEventBreak(breakCause, tr));
         return false;
     }
 
@@ -173,7 +173,7 @@ public class PipeBlock extends EnhancedCustomBlock {
                 .block(world.createSnapshot(pos))
                 .build())
                 .build();
-        DropItemEvent.Destruct harvestEvent = SpongeEventFactory.createDropItemEventDestruct(cause, entities, world);
+        DropItemEvent.Destruct harvestEvent = SpongeEventFactory.createDropItemEventDestruct(cause, entities);
         if (Sponge.getEventManager().post(harvestEvent)) {
             return;
         }

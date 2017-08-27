@@ -28,7 +28,7 @@ public class SupportiveArmorStand<T extends Entity> {
             return false;
         }
         if (this.stand != null) {
-            return this.entity.setVehicle(this.stand).isSuccessful();
+            return this.entity.setVehicle(this.stand);
         }
         return !ensureStandCreated || create();
     }
@@ -67,7 +67,7 @@ public class SupportiveArmorStand<T extends Entity> {
         }
         if (this.stand != null) {
             // For some reason setPassenger behaves differently
-            return this.entity.setVehicle(this.stand).isSuccessful();
+            return this.entity.setVehicle(this.stand);
         }
         this.stand = (ArmorStand) this.entity.getWorld().createEntity(EntityTypes.ARMOR_STAND,
                 this.entity.getLocation().getPosition());
@@ -82,7 +82,7 @@ public class SupportiveArmorStand<T extends Entity> {
             return false;
         }
         this.stand.tryOffer(Keys.INVISIBLE, true);
-        if (!this.stand.addPassenger(this.entity).isSuccessful()) {
+        if (!this.stand.addPassenger(this.entity)) {
             return false;
         }
         return true;

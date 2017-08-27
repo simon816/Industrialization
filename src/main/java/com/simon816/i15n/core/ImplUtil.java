@@ -2,17 +2,15 @@ package com.simon816.i15n.core;
 
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.function.Consumer;
 
 import org.spongepowered.api.block.BlockState;
-import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Entity;
-import org.spongepowered.api.entity.Item;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.Container;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.Slot;
+import org.spongepowered.api.item.recipe.crafting.ShapedCraftingRecipe;
 import org.spongepowered.api.world.World;
 import org.spongepowered.common.item.inventory.adapter.impl.slots.SlotAdapter;
 import org.spongepowered.common.item.inventory.custom.CustomInventory;
@@ -29,18 +27,16 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.crafting.CraftingManager;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagString;
-import net.minecraft.network.NetHandlerPlayServer;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.network.play.server.SPacketSetSlot;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 /**
- * Because things are missing in 4.2.0
+ * Because things are missing in 7.0.0
  */
 public class ImplUtil {
 
@@ -70,32 +66,6 @@ public class ImplUtil {
     }
 
     /**
-     * Recipes aren't implemented.
-     * 
-     * @param outputItem
-     * @param params
-     */
-    public static void registerShapedRecipe(ItemStack outputItem, Object... params) {
-        GameRegistry.addShapedRecipe(ItemStackUtil.toNative(outputItem), params);
-    }
-
-    public static void setInfinitePickupDelay(Item itemEntity) {
-        itemEntity.tryOffer(Keys.INFINITE_PICKUP_DELAY, true);
-    }
-
-    public static void setInfiniteDespawnTime(Item itemEntity) {
-        itemEntity.tryOffer(Keys.INFINITE_DESPAWN_DELAY, true);
-    }
-
-    public static void setPickupDelay(Item itemEntity, int delay) {
-        itemEntity.tryOffer(Keys.PICKUP_DELAY, delay);
-    }
-
-    public static void setDespawnTime(Item itemEntity, int time) {
-        itemEntity.tryOffer(Keys.DESPAWN_DELAY, time);
-    }
-
-    /**
      * {@link Entity#isLoaded} doesn't actually check if it's loaded
      * 
      * @param entity
@@ -104,20 +74,6 @@ public class ImplUtil {
     public static boolean realIsLoaded(Entity entity) {
         return entity != null && !entity.isRemoved()
                 && entity.getWorld().getEntity(entity.getUniqueId()).orElse(null) == entity;
-    }
-
-    public static void showWritableBook(Player player, List<String> lines, Consumer<List<String>> handler) {
-        EntityPlayerMP internalPlayer = (EntityPlayerMP) player;
-        NetHandlerPlayServer netHandler = internalPlayer.connection;
-        InventoryPlayer inventory = internalPlayer.inventory;
-        int bookSlot = inventory.mainInventory.length + inventory.currentItem;
-        net.minecraft.item.ItemStack item = new net.minecraft.item.ItemStack(Items.WRITABLE_BOOK);
-        NBTTagList pages = new NBTTagList();
-        for (String line : lines) {
-            pages.appendTag(new NBTTagString(line));
-        }
-        item.setTagInfo("pages", pages);
-        netHandler.sendPacket(new SPacketSetSlot(0, bookSlot, item));
     }
 
     public static void wrapInventory(Inventory inventory, InventoryAdapter wrap) {
@@ -151,15 +107,18 @@ public class ImplUtil {
 
     public static ItemStack findRecipe(InventoryAdapter inventory, int indexFrom, int indexTo, int offset,
             World world) {
-        return ItemStackUtil.fromNative(CraftingManager.getInstance()
-                .findMatchingRecipe(toCraftingMatrix(inventory, indexFrom, indexTo, offset),
-                        (net.minecraft.world.World) world));
+        InventoryCrafting crafting = toCraftingMatrix(inventory, indexFrom, indexTo, offset);
+        IRecipe recipe = CraftingManager.findMatchingRecipe(crafting, (net.minecraft.world.World) world);
+        if (recipe == null) {
+            return null;
+        }
+        return ItemStackUtil.fromNative(recipe.getCraftingResult(crafting));
     }
 
     public static List<ItemStack> getRemainingItems(InventoryAdapter inventory, int indexFrom, int indexTo, int offset,
             World world) {
         List<ItemStack> list = Lists.newArrayList();
-        for (net.minecraft.item.ItemStack stack : CraftingManager.getInstance().getRemainingItems(
+        for (net.minecraft.item.ItemStack stack : CraftingManager.getRemainingItems(
                 toCraftingMatrix(inventory, indexFrom, indexTo, offset),
                 (net.minecraft.world.World) world)) {
             list.add(ItemStackUtil.fromNative(stack));
@@ -183,5 +142,12 @@ public class ImplUtil {
             return false;
         }
     };
+
+
+    // Sponge can't seem to handle registering recipies in POST_INIT
+    public static void registerRecipe(ShapedCraftingRecipe recipe) {
+        GameRegistry.findRegistry(IRecipe.class)
+                .register(((IRecipe) recipe).setRegistryName(new ResourceLocation(recipe.getId())));
+    }
 
 }

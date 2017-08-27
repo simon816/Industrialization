@@ -16,7 +16,6 @@ import org.spongepowered.api.world.World;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
-import com.simon816.i15n.core.ImplUtil;
 import com.simon816.i15n.core.tile.PipeTileData;
 import com.simon816.i15n.core.world.WorldManager;
 
@@ -170,8 +169,8 @@ public class ItemStackHolder implements PipeObject {
             for (Entity p : passengers) {
                 Item item = (Item) p;
                 item.setVehicle(null);
-                ImplUtil.setPickupDelay(item, 10); // 10 is default
-                ImplUtil.setDespawnTime(item, 6000); // 6000 is default
+                item.tryOffer(Keys.PICKUP_DELAY, 10); // 10 is default
+                item.tryOffer(Keys.DESPAWN_DELAY, 6000); // 6000 is default
             }
             this.itemStand.remove();
         } else {
@@ -226,7 +225,7 @@ public class ItemStackHolder implements PipeObject {
         }
         this.itemStand = createStand(world, this.pos);
         Item itemEntity = createItem(world, this.pos, this.stack, true);
-        if (!this.itemStand.addPassenger(itemEntity).isSuccessful()) {
+        if (!this.itemStand.addPassenger(itemEntity)) {
             this.itemStand = null;
             return; // Attach passenger failed
         }
@@ -256,8 +255,8 @@ public class ItemStackHolder implements PipeObject {
         Item itemEntity = (Item) world.createEntity(EntityTypes.ITEM, pos);
         itemEntity.offer(Keys.REPRESENTED_ITEM, stack.createSnapshot());
         if (noPickup) {
-            ImplUtil.setInfinitePickupDelay(itemEntity);
-            ImplUtil.setInfiniteDespawnTime(itemEntity);
+            itemEntity.tryOffer(Keys.INFINITE_PICKUP_DELAY, true);
+            itemEntity.tryOffer(Keys.INFINITE_DESPAWN_DELAY, true);
         }
         return itemEntity;
     }

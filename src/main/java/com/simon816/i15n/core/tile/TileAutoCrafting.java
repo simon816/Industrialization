@@ -291,7 +291,7 @@ public class TileAutoCrafting extends CustomTileEntity implements ITickable, Inv
     public ItemStack getLiveStack() {
         if (this.currentGoalOut != null) {
             ItemStack stack = this.currentGoalOut.copy();
-            stack.setQuantity(this.percentageLeft);
+            //stack.setQuantity(this.percentageLeft); TODO dammit mojang
             return stack;
         }
         return null;
@@ -371,7 +371,7 @@ public class TileAutoCrafting extends CustomTileEntity implements ITickable, Inv
         System.out.println("take output : " + canTakeOutput() + " zero: " + this.hasZeroStacks);
         ItemStack prevGoal = this.currentGoalOut;
         ItemStack newGoal = findRecipe();
-        boolean recipeStillMatches = newGoal != null && newGoal.equalTo(prevGoal);
+        boolean recipeStillMatches = newGoal != null && prevGoal != null && newGoal.equalTo(prevGoal);
         if (canTakeOutput() && recipeStillMatches && !this.hasZeroStacks) {
             System.out.println("wait");
             // There is stuff waiting to be taken, don't do anything

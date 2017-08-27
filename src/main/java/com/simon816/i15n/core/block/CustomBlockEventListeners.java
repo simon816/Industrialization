@@ -112,7 +112,7 @@ public class CustomBlockEventListeners {
 
     @Listener
     public void onBlockPlaceAfterPiston(ChangeBlockEvent.Place event, @First Piston piston) {
-        World world = event.getTargetWorld();
+        World world = piston.getWorld();
         CustomWorld blockAccess = WorldManager.toCustomWorld(world);
         Vector3i pistonPos = piston.getLocation().getBlockPosition();
         if (!WorldManager.getPistonTracker(world).isTracked(pistonPos)) {
@@ -184,11 +184,11 @@ public class CustomBlockEventListeners {
     public void onBlockBreak(ChangeBlockEvent.Break event) {
         Player player = event.getCause().first(Player.class).orElse(null);
         BlockSnapshot pistonCause = getPistonCause(event.getCause());
-        CustomWorld world = WorldManager.toCustomWorld(event.getTargetWorld());
         for (Transaction<BlockSnapshot> transaction : event.getTransactions()) {
             if (!transaction.isValid()) {
                 continue;
             }
+            CustomWorld world = WorldManager.toCustomWorld(transaction.getFinal().getLocation().get().getExtent());
             BlockSnapshot finalBlock = transaction.getFinal();
             Vector3i pos = finalBlock.getPosition();
             BlockNature block = world.getBlock(pos);
@@ -264,7 +264,7 @@ public class CustomBlockEventListeners {
             return;
         }
         BlockSnapshot blockSnapshot = blockCause.getBlockSnapshot();
-        CustomWorld world = WorldManager.toCustomWorld(event.getTargetWorld());
+        CustomWorld world = WorldManager.toCustomWorld(blockSnapshot.getLocation().get().getExtent());
         Vector3i pos = blockSnapshot.getPosition();
         BlockNature block = world.getBlock(pos);
         if (block == null) {

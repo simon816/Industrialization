@@ -10,7 +10,7 @@ import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.util.Direction;
 
 import com.flowpowered.math.vector.Vector3d;
-import com.simon816.i15n.core.entity.TurtleEntity;
+import com.simon816.i15n.core.entity.turtle.TurtleEntity;
 import com.simon816.i15n.core.world.CustomWorld;
 import com.simon816.i15n.core.world.WorldManager;
 

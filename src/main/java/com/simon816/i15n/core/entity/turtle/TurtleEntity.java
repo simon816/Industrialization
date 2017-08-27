@@ -1,4 +1,4 @@
-package com.simon816.i15n.core.entity;
+package com.simon816.i15n.core.entity.turtle;
 
 import java.util.Optional;
 
@@ -22,10 +22,12 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import com.flowpowered.math.vector.Vector3d;
-import com.google.common.collect.Lists;
 import com.simon816.i15n.core.ImplUtil;
 import com.simon816.i15n.core.Utils;
-import com.simon816.i15n.core.entity.turtle.TurtleTask;
+import com.simon816.i15n.core.entity.CustomEntity;
+import com.simon816.i15n.core.entity.EntityTracker;
+import com.simon816.i15n.core.entity.SupportiveArmorStand;
+import com.simon816.i15n.core.entity.TrackerSerializer;
 import com.simon816.i15n.core.item.ItemRegistry;
 import com.simon816.i15n.core.item.ItemWrench;
 import com.simon816.i15n.core.world.CustomWorld;
@@ -58,11 +60,8 @@ public class TurtleEntity extends CustomEntity implements EntityTracker {
     @Override
     public void onEntityActivated(Entity entity, Player player, HandType currHand) {
         if (ItemWrench.isPlayerUsing(player, currHand)) {
-            ImplUtil.showWritableBook(player, Lists.newArrayList(this.task.getCode()), newLines -> {
-                if (!newLines.isEmpty()) {
-                    Utils.runLater(() -> this.task.setCode(newLines.get(0)));
-                }
-            });
+            // TODO code editor
+        } else {
         }
     }
 

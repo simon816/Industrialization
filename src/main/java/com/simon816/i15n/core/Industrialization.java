@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.data.DataContainer;
-import org.spongepowered.api.data.DataManager;
+import org.spongepowered.api.data.DataRegistration;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.persistence.DataFormats;
 import org.spongepowered.api.event.Listener;
@@ -24,6 +24,8 @@ import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartingServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.item.ItemTypes;
+import org.spongepowered.api.item.recipe.crafting.Ingredient;
+import org.spongepowered.api.item.recipe.crafting.ShapedCraftingRecipe;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
@@ -37,13 +39,12 @@ import com.simon816.i15n.core.block.PipeBlock;
 import com.simon816.i15n.core.data.CustomItemData;
 import com.simon816.i15n.core.entity.EntityEventListeners;
 import com.simon816.i15n.core.entity.EntityRegistry;
-import com.simon816.i15n.core.entity.TurtleEntity;
+import com.simon816.i15n.core.entity.turtle.TurtleEntity;
 import com.simon816.i15n.core.inv.InventoryEventListeners;
 import com.simon816.i15n.core.item.CustomItemEventListeners;
 import com.simon816.i15n.core.item.ItemRegistry;
 import com.simon816.i15n.core.item.ItemTurtle;
 import com.simon816.i15n.core.item.ItemWrench;
-import com.simon816.i15n.core.recipe.RecipeRegistry;
 import com.simon816.i15n.core.world.WorldEventListeners;
 import com.simon816.i15n.core.world.WorldManager;
 
@@ -86,8 +87,13 @@ public class Industrialization {
     }
 
     private void registerData() {
-        DataManager mgr = Sponge.getDataManager();
-        mgr.register(CustomItemData.class, CustomItemData.Immutable.class, new CustomItemData.Builder());
+        DataRegistration.builder()
+                .dataClass(CustomItemData.class)
+                .immutableClass(CustomItemData.Immutable.class)
+                .builder(new CustomItemData.Builder())
+                .manipulatorId("custom_item_data")
+                .dataName("Custom Item Data")
+                .buildAndRegister(toContainer());
     }
 
     private void registerObjects() {
@@ -104,35 +110,65 @@ public class Industrialization {
     }
 
     private void registerRecipes() {
-        RecipeRegistry.builder(ItemRegistry.get("auto_crafting_bench"))
-                .row("SSS")
-                .row("SCS")
-                .row("SSS")
-                .replace('S', ItemTypes.STICK).replace('C', ItemTypes.CRAFTING_TABLE)
-                .register();
+        ShapedCraftingRecipe.Builder builder = ShapedCraftingRecipe.builder();
 
-        RecipeRegistry.builder(ItemRegistry.get("pipe"))
-                .row(" P ")
-                .row("P P")
-                .row(" P ")
-                .replace('P', ItemTypes.GLASS_PANE)
-                .register();
+        ShapedCraftingRecipe recipe;
 
-        RecipeRegistry.builder(ItemRegistry.get("turtle"))
-                .row(" T ")
-                .row("IDP")
-                .row("   ")
-                .replace('T', ItemTypes.REDSTONE_TORCH).replace('I', ItemTypes.IRON_INGOT)
-                .replace('D', ItemTypes.DISPENSER).replace('P', ItemTypes.DIAMOND_PICKAXE)
-                .register();
+        // @formatter:off
+        recipe = builder.reset()
+                .aisle("SSS",
+                       "SCS",
+                       "SSS")
+                .where('S', Ingredient.of(ItemTypes.STICK))
+                .where('C', Ingredient.of(ItemTypes.CRAFTING_TABLE))
+                .result(ItemRegistry.get("auto_crafting_bench").createItemStack())
+                .build("auto_crafting_bench", this);
+        ImplUtil.registerRecipe(recipe);
 
-        RecipeRegistry.builder(ItemRegistry.get("wrench"))
-                .row("ITI")
-                .row(" S ")
-                .row(" S ")
-                .replace('I', ItemTypes.IRON_INGOT).replace('T', ItemTypes.REDSTONE_TORCH)
-                .replace('S', ItemTypes.STICK)
-                .register();
+        recipe = builder.reset()
+                .aisle(" P ",
+                       "P P",
+                       " P ")
+                .where('P', Ingredient.of(ItemTypes.GLASS_PANE))
+                .result(ItemRegistry.get("pipe").createItemStack())
+                .build("pipe", this);
+        ImplUtil.registerRecipe(recipe);
+
+        recipe = builder.reset()
+                .aisle(" T ",
+                       "IDP",
+                       "   ")
+                .where('T', Ingredient.of(ItemTypes.REDSTONE_TORCH))
+                .where('I', Ingredient.of(ItemTypes.IRON_INGOT))
+                .where('D', Ingredient.of(ItemTypes.DISPENSER))
+                .where('P', Ingredient.of(ItemTypes.DIAMOND_PICKAXE))
+                .result(ItemRegistry.get("turtle").createItemStack())
+                .build("turtle", this);
+        ImplUtil.registerRecipe(recipe);
+
+
+        recipe = builder.reset()
+                .aisle("ITI",
+                       " S ",
+                       " S ")
+                .where('I', Ingredient.of(ItemTypes.IRON_INGOT))
+                .where('T', Ingredient.of(ItemTypes.REDSTONE_TORCH))
+                .where('S', Ingredient.of(ItemTypes.STICK))
+                .result(ItemRegistry.get("wrench").createItemStack())
+                .build("wrench", this);
+        ImplUtil.registerRecipe(recipe);
+
+        recipe = builder.reset()
+                .aisle(" P ",
+                       "PFP",
+                       " P ")
+                .where('P', Ingredient.of(ItemTypes.GLASS_PANE))
+                .where('F', Ingredient.of(ItemTypes.ITEM_FRAME))
+                .result(ItemRegistry.get("monitor").createItemStack())
+                .build("monitor", this);
+        ImplUtil.registerRecipe(recipe);
+
+        // @formatter:on
     }
 
     private void registerEventListeners() {

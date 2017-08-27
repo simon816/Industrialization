@@ -11,7 +11,6 @@ import com.google.common.collect.Lists;
 import com.simon816.i15n.core.ITickable;
 import com.simon816.i15n.core.Serialized;
 import com.simon816.i15n.core.Utils;
-import com.simon816.i15n.core.entity.TurtleEntity;
 
 public class TurtleTask implements ITickable, Serialized {
 
