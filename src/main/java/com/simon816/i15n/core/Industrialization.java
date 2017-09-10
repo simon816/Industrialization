@@ -35,6 +35,7 @@ import com.google.inject.Inject;
 import com.simon816.i15n.core.block.AutoCraftingBench;
 import com.simon816.i15n.core.block.BlockRegistry;
 import com.simon816.i15n.core.block.CustomBlockEventListeners;
+import com.simon816.i15n.core.block.MonitorDriverBlock;
 import com.simon816.i15n.core.block.PipeBlock;
 import com.simon816.i15n.core.data.CustomItemData;
 import com.simon816.i15n.core.entity.EntityEventListeners;
@@ -112,6 +113,9 @@ public class Industrialization {
 
         ItemRegistry.register("monitor", new ItemMonitor());
         EntityRegistry.register("monitor", MonitorEntity.class, world -> new MonitorEntity(world.getWorld(), 0, 0));
+
+        BlockRegistry.register("monitor_driver", new MonitorDriverBlock());
+        ItemRegistry.registerItemForBlock(ItemTypes.CAKE, BlockRegistry.get("monitor_driver"));
     }
 
     private void registerRecipes() {
