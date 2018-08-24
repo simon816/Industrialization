@@ -1,5 +1,6 @@
 package com.simon816.i15n.core;
 
+import java.util.Arrays;
 import java.util.Map.Entry;
 import java.util.Optional;
 
@@ -18,6 +19,7 @@ import org.spongepowered.api.util.Direction;
 import org.spongepowered.api.world.World;
 
 import com.flowpowered.math.vector.Vector3i;
+import com.google.common.collect.Iterables;
 import com.simon816.i15n.core.data.DataList;
 import com.simon816.i15n.core.inv.InventoryAdapter;
 import com.simon816.i15n.core.inv.SpongeInventoryAdapter;
@@ -60,7 +62,7 @@ public class Utils {
         return Direction.EAST;
     }
 
-        public static double directionToRotation(Direction direction) {
+    public static double directionToRotation(Direction direction) {
         if (direction == Direction.NORTH) {
             return 180;
         } else if (direction == Direction.EAST) {
@@ -71,6 +73,18 @@ public class Utils {
             return 90;
         }
         return -1;
+    }
+
+    public static Iterable<Direction> cardinalDirections() {
+        return Iterables.filter(Arrays.asList(Direction.values()), Direction::isCardinal);
+    }
+
+    public static Iterable<Direction> uprightDirections() {
+        return Iterables.filter(Arrays.asList(Direction.values()), Direction::isUpright);
+    }
+
+    public static Iterable<Direction> blockFaces() {
+        return Iterables.concat(cardinalDirections(), uprightDirections());
     }
 
     public static void runLater(Runnable runnable) {

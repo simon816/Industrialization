@@ -12,7 +12,6 @@ import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.EventListener;
-import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
 import org.spongepowered.api.item.inventory.Container;
 import org.spongepowered.api.item.inventory.Inventory;
@@ -40,7 +39,6 @@ import com.simon816.i15n.core.inv.SimpleSidedInventory;
 import com.simon816.i15n.core.inv.SimpleSidedInventory.PullHandler;
 import com.simon816.i15n.core.recipe.RecipeUtil;
 import com.simon816.i15n.core.world.CustomWorld;
-import com.simon816.i15n.core.world.WorldManager;
 
 
 public class TileAutoCrafting extends CustomTileEntity implements ITickable, InventoryProvider, SimpleObserver {
@@ -85,7 +83,7 @@ public class TileAutoCrafting extends CustomTileEntity implements ITickable, Inv
         sided.setPushHandler((stack, side) -> {
             for (int i = 1; i < this.inventory.getSize(); i++) {
                 ItemStack invStack = this.inventory.getStack(i);
-                if (invStack != null && invStack.getItem().equals(stack.getItem())) {
+                if (invStack != null && invStack.getType().equals(stack.getType())) {
                     int newQty = invStack.getQuantity() + stack.getQuantity();
                     if (invStack.getMaxStackQuantity() >= newQty) {
                         invStack.setQuantity(newQty);
@@ -165,7 +163,7 @@ public class TileAutoCrafting extends CustomTileEntity implements ITickable, Inv
             if (curOrig == ItemStackSnapshot.NONE) {
                 System.out.println("pick up 0 stack");
                 // If they try to pick up the 0 stack with nothing in cursor:
-                if (slotOrig.getCount() == 0) {
+                if (slotOrig.getQuantity() == 0) {
                     cursorTransaction.setCustom(ItemStackSnapshot.NONE);
                 } else {
                     System.out.println("Reset to 0");
@@ -181,7 +179,7 @@ public class TileAutoCrafting extends CustomTileEntity implements ITickable, Inv
                 // Trying to place item on top of current item
 
                 // If they attempt to switch-out the 0 stack with another type
-                if (slotOrig.getCount() == 0 && slotOrig.getType() != curOrig.getType()) {
+                if (slotOrig.getQuantity() == 0 && slotOrig.getType() != curOrig.getType()) {
                     System.out.println("switch out 0 stack");
                     ItemStack zeroStack = curOrig.createStack();
                     zeroStack.setQuantity(0);
@@ -259,7 +257,8 @@ public class TileAutoCrafting extends CustomTileEntity implements ITickable, Inv
     private void dropItem(ItemStack stack) {
         Entity item = this.world.getWorld().createEntity(EntityTypes.ITEM, getPosition().toDouble().add(0.5, 0.5, 0.5));
         item.offer(Keys.REPRESENTED_ITEM, stack.createSnapshot());
-        this.world.getWorld().spawnEntity(item, WorldManager.SPAWN_CAUSE);
+        // TODO possible cause/context
+        this.world.getWorld().spawnEntity(item);
     }
 
     private boolean isItemsEqual(ItemStack stackA, ItemStack stackB) {
@@ -416,11 +415,11 @@ public class TileAutoCrafting extends CustomTileEntity implements ITickable, Inv
         }
     }
 
-    public void destroy(Cause closeCause) {
+    public void destroy() {
         this.ready = false;
         for (Container container : Lists.newArrayList(this.containers)) {
             removeContainer(container);
-            containerToPlayer(container).closeInventory(closeCause);
+            containerToPlayer(container).closeInventory();
         }
         for (int i = 0; i < this.inventory.getSize(); i++) {
             ItemStack item = this.inventory.getStack(i);

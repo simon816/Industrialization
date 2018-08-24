@@ -5,7 +5,6 @@ import org.spongepowered.api.data.manipulator.mutable.entity.ArmorStandData;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.ArmorStand;
-import org.spongepowered.api.event.cause.Cause;
 
 import com.simon816.i15n.core.ImplUtil;
 
@@ -47,14 +46,14 @@ public class SupportiveArmorStand<T extends Entity> {
         return this.entity != null;
     }
 
-    public boolean spawn(Cause cause) {
+    public boolean spawn() {
         if (!create()) {
             return false;
         }
-        if (!ImplUtil.realIsLoaded(this.entity) && !this.entity.getWorld().spawnEntity(this.entity, cause)) {
+        if (!ImplUtil.realIsLoaded(this.entity) && !this.entity.getWorld().spawnEntity(this.entity)) {
             return false;
         }
-        if (!ImplUtil.realIsLoaded(this.stand) && !this.entity.getWorld().spawnEntity(this.stand, cause)) {
+        if (!ImplUtil.realIsLoaded(this.stand) && !this.entity.getWorld().spawnEntity(this.stand)) {
             this.entity.remove();
             return false;
         }

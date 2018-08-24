@@ -1,23 +1,26 @@
 package com.simon816.i15n.core;
 
+import org.spongepowered.api.CatalogKey;
+
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
 public class SimpleRegistry<T> {
-    private final BiMap<String, T> map = HashBiMap.create();
 
-    public void add(String key, T value) {
-        if (map.putIfAbsent(key, value) != null) {
+    private final BiMap<CatalogKey, T> map = HashBiMap.create();
+
+    public void add(CatalogKey key, T value) {
+        if (this.map.putIfAbsent(key, value) != null) {
             throw new IllegalStateException(key + " is already registered");
         }
     }
 
-    public T get(String key) {
-        return map.get(key);
+    public T get(CatalogKey key) {
+        return this.map.get(key);
     }
 
-    public String getKeyFor(T value) {
-        return map.inverse().get(value);
+    public CatalogKey getKeyFor(T value) {
+        return this.map.inverse().get(value);
     }
 
 }

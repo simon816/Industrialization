@@ -21,8 +21,7 @@ import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.block.NotifyNeighborBlockEvent;
 import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
-import org.spongepowered.api.event.cause.entity.spawn.BlockSpawnCause;
+import org.spongepowered.api.event.cause.EventContextKeys;
 import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.filter.cause.Root;
@@ -64,12 +63,12 @@ public class CustomBlockEventListeners {
 
     /*
      * Linked to ItemBlockWrapper#onItemUse.
-     * 
+     *
      * Handles the place event after an itemblock is 'used'.
      */
     @Listener
     public void onBlockPlaceAfterItemUse(ChangeBlockEvent.Place event, @First Player player) {
-        if (!event.getCause().get(NamedCause.SOURCE, Player.class).isPresent()) {
+        if (!(event.getSource() instanceof Player)) {
             clearTempVars();
             return; // Player must be source of event (i.e. not Notifier)
         }
@@ -169,7 +168,7 @@ public class CustomBlockEventListeners {
         if (event instanceof InteractBlockEvent.Primary) {
             allowInteract = block.onBlockHit(world, pos, player, hand, side, point);
         } else if (event instanceof InteractBlockEvent.Secondary) {
-            if (player.getItemInHand(hand).isPresent() && player.get(Keys.IS_SNEAKING).get()) {
+            if (!player.getItemInHand(hand).isEmpty() && player.get(Keys.IS_SNEAKING).get()) {
                 // Pass on the item click without telling the block
                 allowInteract = true;
             } else {
@@ -259,11 +258,10 @@ public class CustomBlockEventListeners {
     }
 
     @Listener
-    public void onBlockDropItems(DropItemEvent.Destruct event, @Root BlockSpawnCause blockCause) {
-        if (blockCause.getType() != SpawnTypes.DROPPED_ITEM) {
+    public void onBlockDropItems(DropItemEvent.Destruct event, @Root BlockSnapshot blockSnapshot) {
+        if (event.getContext().get(EventContextKeys.SPAWN_TYPE).get() != SpawnTypes.DROPPED_ITEM) {
             return;
         }
-        BlockSnapshot blockSnapshot = blockCause.getBlockSnapshot();
         CustomWorld world = WorldManager.toCustomWorld(blockSnapshot.getLocation().get().getExtent());
         Vector3i pos = blockSnapshot.getPosition();
         BlockNature block = world.getBlock(pos);

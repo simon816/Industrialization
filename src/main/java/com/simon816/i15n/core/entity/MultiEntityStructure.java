@@ -3,6 +3,7 @@ package com.simon816.i15n.core.entity;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
@@ -60,7 +61,7 @@ public class MultiEntityStructure {
 
     private static Entity spawn(BiFunction<World, Vector3i, Entity> fn, World world, Vector3i pos) {
         Entity entity = fn.apply(world, pos);
-        if (entity != null && world.spawnEntity(entity, WorldManager.SPAWN_CAUSE)) {
+        if (entity != null && world.spawnEntity(entity)) {
             return entity;
         }
         return null;
@@ -155,6 +156,14 @@ public class MultiEntityStructure {
             }
         }
 
+        public void forEachEntity(Consumer<Entity> func) {
+            this.entities.values().forEach(func);
+        }
+
+        public void forEachEntity(BiConsumer<String, Entity> func) {
+            this.entities.entrySet().forEach(e -> func.accept(e.getKey(), e.getValue()));
+        }
+
         public <T extends Entity> boolean lateBind(String identifier, EntityType type, Vector3f offsetPos,
                 Class<T> entityClass,
                 Consumer<T> initializer) {
@@ -165,7 +174,7 @@ public class MultiEntityStructure {
         }
 
         private boolean spawn(String identifier, Entity entity) {
-            if (this.world.spawnEntity(entity, WorldManager.SPAWN_CAUSE)) {
+            if (this.world.spawnEntity(entity)) {
                 remove(identifier); // In case of existing ones
                 this.entities.put(identifier, entity);
                 WorldManager.toCustomWorld(this.world).addEntityToTracker(entity, this);

@@ -37,8 +37,8 @@ repositories {
 }
 
 dependencies {
-    compile 'org.spongepowered:spongeapi:7.0.0-SNAPSHOT'
-    compile 'org.spongepowered:spongeforge:1.12.1-2444-7.0.0-BETA-2602:dev'
+    compile 'org.spongepowered:spongeapi:8.0.0-SNAPSHOT'
+    compile 'org.spongepowered:spongeforge:1.12.2-2705-8.0.0-BETA-3402:dev'
 }
 
 compileJava.options.encoding = 'UTF-8'

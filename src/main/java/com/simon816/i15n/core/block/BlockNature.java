@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import org.spongepowered.api.CatalogKey;
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.type.HandType;
@@ -25,8 +26,8 @@ import com.simon816.i15n.core.world.CustomWorld;
 public interface BlockNature extends CatalogType {
 
     @Override
-    default String getId() {
-        return BlockRegistry.blockToId(this);
+    default CatalogKey getKey() {
+        return BlockRegistry.blockToKey(this);
     }
 
     BlockData createData(CustomWorld world, Vector3i pos);

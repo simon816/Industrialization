@@ -58,7 +58,7 @@ public class MonitorEntity extends CustomEntity implements EntityTracker {
 
     /**
      * Returns null if initialised with a zero size (e.g before reading from stored data)
-     * 
+     *
      * @return
      */
     public FrameBuffer getBuffer() {
@@ -113,7 +113,7 @@ public class MonitorEntity extends CustomEntity implements EntityTracker {
         itemFrame.offer(itemFrame.direction().set(facing));
         ImplUtil.setItemDamage(mapItem, mapId);
         itemFrame.offer(Keys.REPRESENTED_ITEM, mapItem.createSnapshot());
-        if (world.getWorld().spawnEntity(itemFrame, WorldManager.SPAWN_CAUSE)) {
+        if (world.getWorld().spawnEntity(itemFrame)) {
             return itemFrame;
         }
         return null;

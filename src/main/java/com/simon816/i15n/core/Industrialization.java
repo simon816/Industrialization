@@ -11,6 +11,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import org.slf4j.Logger;
+import org.spongepowered.api.CatalogKey;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.data.DataContainer;
@@ -100,22 +101,26 @@ public class Industrialization {
     }
 
     private void registerObjects() {
-        BlockRegistry.register("auto_crafting_bench", new AutoCraftingBench());
-        ItemRegistry.registerItemForBlock(ItemTypes.CRAFTING_TABLE, BlockRegistry.get("auto_crafting_bench"));
+        BlockRegistry.register(key("auto_crafting_bench"), new AutoCraftingBench());
+        ItemRegistry.registerItemForBlock(ItemTypes.CRAFTING_TABLE, BlockRegistry.get(key("auto_crafting_bench")));
 
-        BlockRegistry.register("pipe", new PipeBlock());
-        ItemRegistry.registerItemForBlock(ItemTypes.GLASS, BlockRegistry.get("pipe"));
+        BlockRegistry.register(key("pipe"), new PipeBlock());
+        ItemRegistry.registerItemForBlock(ItemTypes.GLASS, BlockRegistry.get(key("pipe")));
 
-        ItemRegistry.register("turtle", new ItemTurtle());
-        EntityRegistry.register("turtle", TurtleEntity.class);
+        ItemRegistry.register(key("turtle"), new ItemTurtle());
+        EntityRegistry.register(key("turtle"), TurtleEntity.class);
 
-        ItemRegistry.register("wrench", new ItemWrench());
+        ItemRegistry.register(key("wrench"), new ItemWrench());
 
-        ItemRegistry.register("monitor", new ItemMonitor());
-        EntityRegistry.register("monitor", MonitorEntity.class, world -> new MonitorEntity(world.getWorld(), 0, 0));
+        ItemRegistry.register(key("monitor"), new ItemMonitor());
+        EntityRegistry.register(key("monitor"), MonitorEntity.class, world -> new MonitorEntity(world.getWorld(), 0, 0));
 
-        BlockRegistry.register("monitor_driver", new MonitorDriverBlock());
-        ItemRegistry.registerItemForBlock(ItemTypes.CAKE, BlockRegistry.get("monitor_driver"));
+        BlockRegistry.register(key("monitor_driver"), new MonitorDriverBlock());
+        ItemRegistry.registerItemForBlock(ItemTypes.CAKE, BlockRegistry.get(key("monitor_driver")));
+    }
+
+    private CatalogKey key(String id) {
+        return new I15NKey("i15n", id);
     }
 
     private void registerRecipes() {
@@ -130,7 +135,7 @@ public class Industrialization {
                        "SSS")
                 .where('S', Ingredient.of(ItemTypes.STICK))
                 .where('C', Ingredient.of(ItemTypes.CRAFTING_TABLE))
-                .result(ItemRegistry.get("auto_crafting_bench").createItemStack())
+                .result(ItemRegistry.get(key("auto_crafting_bench")).createItemStack())
                 .build("auto_crafting_bench", this);
         ImplUtil.registerRecipe(recipe);
 
@@ -139,7 +144,7 @@ public class Industrialization {
                        "P P",
                        " P ")
                 .where('P', Ingredient.of(ItemTypes.GLASS_PANE))
-                .result(ItemRegistry.get("pipe").createItemStack())
+                .result(ItemRegistry.get(key("pipe")).createItemStack())
                 .build("pipe", this);
         ImplUtil.registerRecipe(recipe);
 
@@ -151,7 +156,7 @@ public class Industrialization {
                 .where('I', Ingredient.of(ItemTypes.IRON_INGOT))
                 .where('D', Ingredient.of(ItemTypes.DISPENSER))
                 .where('P', Ingredient.of(ItemTypes.DIAMOND_PICKAXE))
-                .result(ItemRegistry.get("turtle").createItemStack())
+                .result(ItemRegistry.get(key("turtle")).createItemStack())
                 .build("turtle", this);
         ImplUtil.registerRecipe(recipe);
 
@@ -163,7 +168,7 @@ public class Industrialization {
                 .where('I', Ingredient.of(ItemTypes.IRON_INGOT))
                 .where('T', Ingredient.of(ItemTypes.REDSTONE_TORCH))
                 .where('S', Ingredient.of(ItemTypes.STICK))
-                .result(ItemRegistry.get("wrench").createItemStack())
+                .result(ItemRegistry.get(key("wrench")).createItemStack())
                 .build("wrench", this);
         ImplUtil.registerRecipe(recipe);
 
@@ -173,7 +178,7 @@ public class Industrialization {
                        " P ")
                 .where('P', Ingredient.of(ItemTypes.GLASS_PANE))
                 .where('F', Ingredient.of(ItemTypes.ITEM_FRAME))
-                .result(ItemRegistry.get("monitor").createItemStack())
+                .result(ItemRegistry.get(key("monitor")).createItemStack())
                 .build("monitor", this);
         ImplUtil.registerRecipe(recipe);
 

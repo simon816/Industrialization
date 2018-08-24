@@ -1,5 +1,6 @@
 package com.simon816.i15n.core.entity;
 
+import org.spongepowered.api.CatalogKey;
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.world.World;
@@ -22,8 +23,8 @@ public abstract class CustomEntity implements CatalogType, ITickable, Serialized
     }
 
     @Override
-    public String getId() {
-        return EntityRegistry.entityToId(this.getClass());
+    public CatalogKey getKey() {
+        return EntityRegistry.entityToKey(this.getClass());
     }
 
     public Vector3d getPosition() {

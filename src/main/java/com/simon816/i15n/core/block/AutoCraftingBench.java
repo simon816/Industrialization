@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import org.spongepowered.api.data.type.HandType;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.item.inventory.Container;
 import org.spongepowered.api.util.Direction;
 
@@ -28,11 +27,8 @@ public class AutoCraftingBench extends CustomBlock {
 
     @Override
     public boolean onBlockBreak(CustomWorld world, Vector3i pos, Player player) {
-        Cause.Builder cause = Cause.source(this);
-        if (player != null) {
-            cause.notifier(player);
-        }
-        ((TileAutoCrafting) world.getBlockData(pos)).destroy(cause.build());
+        // TODO possible cause/context
+        ((TileAutoCrafting) world.getBlockData(pos)).destroy();
         return true;
     }
 
@@ -40,8 +36,8 @@ public class AutoCraftingBench extends CustomBlock {
     public boolean onBlockActivated(CustomWorld world, Vector3i pos, Player player, HandType currHand, Direction side,
             Vector3d clickPoint) {
         TileAutoCrafting te = (TileAutoCrafting) world.getBlockData(pos);
-        Optional<Container> optContainer = player.openInventory(
-                te.getInventory().getAPIInventory(), Cause.source(this).notifier(player).build());
+        // TODO possible cause/context
+        Optional<Container> optContainer = player.openInventory(te.getInventory().getAPIInventory());
         if (optContainer.isPresent()) {
             te.addContainer(optContainer.get());
         }

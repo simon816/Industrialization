@@ -1,7 +1,5 @@
 package com.simon816.i15n.core.item;
 
-import java.util.Optional;
-
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.data.type.HandType;
 import org.spongepowered.api.entity.living.player.Player;
@@ -31,11 +29,11 @@ public class ItemWrench extends CustomItem {
     }
 
     public static boolean isPlayerUsing(Player player, HandType currHand) {
-        Optional<ItemStack> opItem = player.getItemInHand(currHand);
-        if (!opItem.isPresent()) {
+        ItemStack handItem = player.getItemInHand(currHand);
+        if (handItem.isEmpty()) {
             return false;
         }
-        CustomItem item = CustomItem.fromItemStack(opItem.get());
+        CustomItem item = CustomItem.fromItemStack(handItem);
         return item == ItemRegistry.get("wrench");
     }
 

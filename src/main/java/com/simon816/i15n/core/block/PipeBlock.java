@@ -1,15 +1,20 @@
 package com.simon816.i15n.core.block;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockSnapshot;
+import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.Transaction;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.entity.ArmorStandData;
+import org.spongepowered.api.data.type.DyeColor;
+import org.spongepowered.api.data.type.DyeColors;
 import org.spongepowered.api.data.type.HandType;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
@@ -18,23 +23,20 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.event.SpongeEventFactory;
 import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
-import org.spongepowered.api.event.cause.entity.spawn.BlockSpawnCause;
-import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
 import org.spongepowered.api.event.item.inventory.DropItemEvent;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.util.Axis;
 import org.spongepowered.api.util.Direction;
-import org.spongepowered.api.world.BlockChangeFlag;
+import org.spongepowered.api.world.BlockChangeFlags;
 import org.spongepowered.api.world.World;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3f;
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.simon816.i15n.core.ImplUtil;
-import com.simon816.i15n.core.Industrialization;
 import com.simon816.i15n.core.Utils;
 import com.simon816.i15n.core.entity.MultiEntityStructure;
 import com.simon816.i15n.core.entity.MultiEntityStructure.StructureInstance;
@@ -57,10 +59,10 @@ public class PipeBlock extends EnhancedCustomBlock {
         ArmorStandData data = stand.getOrCreate(ArmorStandData.class).get();
         data.set(data.basePlate().set(false));
         data.set(data.marker().set(true));
-        stand.offer(data);
-        stand.offer(Keys.HAS_GRAVITY, false);
+        stand.tryOffer(data);
+        stand.tryOffer(Keys.HAS_GRAVITY, false);
         if (rotation != null) {
-            stand.offer(Keys.HEAD_ROTATION, rotation);
+            stand.tryOffer(Keys.HEAD_ROTATION, rotation);
         }
         stand.setRotation(Vector3d.ZERO);
         stand.setHelmet(this.pane);
@@ -121,7 +123,13 @@ public class PipeBlock extends EnhancedCustomBlock {
     @Override
     public BlockSnapshot onBlockPlacedByPlayer(CustomWorld world, Vector3i pos, BlockSnapshot blockSnapshot,
             Player player, ItemBlockWrapper item, ItemStack itemStack) {
-        this.entityStruct.initialize(world, pos);
+        StructureInstance instance = this.entityStruct.initialize(world, pos);
+        Variant variant = Variant.values()[new Random().nextInt(Variant.values().length)];
+        instance.forEachEntity(e -> {
+            ItemStack paneItem = ((ArmorStand) e).getHelmet().copy();
+            paneItem.offer(Keys.DYE_COLOR, variant.dyeColor());
+            ((ArmorStand) e).setHelmet(paneItem);
+        });
         return blockSnapshot.withState(BlockTypes.BARRIER.getDefaultState());
     }
 
@@ -134,16 +142,19 @@ public class PipeBlock extends EnhancedCustomBlock {
     @Override
     public boolean onBlockHit(CustomWorld world, Vector3i pos, Player player, HandType currHand, Direction side,
             Vector3d clickPoint) {
-        Cause breakCause = Cause.builder()
-                .named("plugin", Industrialization.toContainer())
-                .named(NamedCause.SOURCE, player)
-                .build();
-        world.getWorld().setBlockType(pos, BlockTypes.AIR, BlockChangeFlag.ALL, breakCause);
+        // TODO review this
+        Cause breakCause = Sponge.getCauseStackManager().getCurrentCause();
+        world.getWorld().setBlockType(pos, BlockTypes.AIR, BlockChangeFlags.ALL);
         // Sponge broke and doesn't fire the event (SpongeCommon#998)
         BlockSnapshot from = world.getWorld().createSnapshot(pos);
         BlockSnapshot to = from.withState(BlockTypes.AIR.getDefaultState());
         List<Transaction<BlockSnapshot>> tr = Lists.newArrayList(new Transaction<>(from, to));
         Sponge.getEventManager().post(SpongeEventFactory.createChangeBlockEventBreak(breakCause, tr));
+        Map<Direction, BlockState> neighbours =
+                Maps.toMap(Utils.blockFaces(), d -> world.getRealBlock(pos.add(d.asBlockOffset())));
+        Cause notifyCause = Sponge.getCauseStackManager().getCurrentCause();
+        Sponge.getEventManager()
+                .post(SpongeEventFactory.createNotifyNeighborBlockEvent(notifyCause, neighbours, neighbours));
         return false;
     }
 
@@ -168,17 +179,14 @@ public class PipeBlock extends EnhancedCustomBlock {
             Entity drop = createItemDrop(world, pos, stack);
             entities.add(drop);
         }
-        Cause cause = Cause.source(BlockSpawnCause.builder()
-                .type(SpawnTypes.DROPPED_ITEM)
-                .block(world.createSnapshot(pos))
-                .build())
-                .build();
+        // TODO review causes
+        Cause cause = Sponge.getCauseStackManager().getCurrentCause();
         DropItemEvent.Destruct harvestEvent = SpongeEventFactory.createDropItemEventDestruct(cause, entities);
         if (Sponge.getEventManager().post(harvestEvent)) {
             return;
         }
         for (Entity entity : harvestEvent.getEntities()) {
-            world.spawnEntity(entity, cause);
+            world.spawnEntity(entity);
         }
     }
 
@@ -274,7 +282,8 @@ public class PipeBlock extends EnhancedCustomBlock {
         }
         Vector3f offsetPos =
                 armorStandOffset(false, s1Side == Direction.WEST || s1Side == Direction.EAST || s1Side == Direction.DOWN
-                        ? Axis.Z : Axis.X, offset);
+                        ? Axis.Z
+                        : Axis.X, offset);
 
         struct1.lateBind(shareId(s1Side, 1), EntityTypes.ARMOR_STAND, offsetPos, ArmorStand.class,
                 stand -> setupArmorStand(stand, rot));
@@ -343,6 +352,21 @@ public class PipeBlock extends EnhancedCustomBlock {
             return;
         }
         struct.writeTo(data.createView(DataQuery.of("struct")));
+    }
+
+    public enum Variant {
+        STANDARD(DyeColors.WHITE), FAST(DyeColors.GRAY), BOOST(DyeColors.YELLOW), FILTER(DyeColors.CYAN), DIRECTIONAL(
+                DyeColors.BLUE);
+
+        private final DyeColor color;
+
+        private Variant(DyeColor color) {
+            this.color = color;
+        }
+
+        public DyeColor dyeColor() {
+            return this.color;
+        }
     }
 
 }

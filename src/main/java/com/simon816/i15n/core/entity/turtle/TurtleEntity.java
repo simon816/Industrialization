@@ -79,7 +79,7 @@ public class TurtleEntity extends CustomEntity implements EntityTracker {
         Entity item = this.world.createEntity(EntityTypes.ITEM, this.pos.add(0.5, 0.5, 0.5));
         ItemStack stack = ItemRegistry.get("turtle").createItemStack();
         item.offer(Keys.REPRESENTED_ITEM, stack.createSnapshot());
-        this.world.spawnEntity(item, WorldManager.SPAWN_CAUSE);
+        this.world.spawnEntity(item);
     }
 
     @Override
@@ -108,7 +108,7 @@ public class TurtleEntity extends CustomEntity implements EntityTracker {
         if (createInternalEntities(world)) {
             if (this.isSpawned) {
                 // Re-attach passenger (some strange bug)
-                this.block.spawn(WorldManager.SPAWN_CAUSE);
+                this.block.spawn();
             }
             // positions
             this.block.getStand().setLocation(this.block.getStand().getLocation().setPosition(this.pos));
@@ -122,7 +122,7 @@ public class TurtleEntity extends CustomEntity implements EntityTracker {
                 this.block.setEntity(null, true);
                 createInternalEntities(world);
                 if (this.isSpawned) {
-                    this.block.spawn(WorldManager.SPAWN_CAUSE);
+                    this.block.spawn();
                 }
             }
             this.pickaxeStand.setRotation(getPickaxeRot());
@@ -199,11 +199,11 @@ public class TurtleEntity extends CustomEntity implements EntityTracker {
         if (!createInternalEntities(world)) {
             return false;
         }
-        if (!this.block.spawn(WorldManager.SPAWN_CAUSE)) {
+        if (!this.block.spawn()) {
             return false;
         }
         if (!ImplUtil.realIsLoaded(this.pickaxeStand)
-                && !this.world.spawnEntity(this.pickaxeStand, WorldManager.SPAWN_CAUSE)) {
+                && !this.world.spawnEntity(this.pickaxeStand)) {
             this.block.remove();
             return false;
         }

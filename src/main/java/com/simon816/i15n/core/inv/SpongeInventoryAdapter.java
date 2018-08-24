@@ -36,7 +36,8 @@ public class SpongeInventoryAdapter implements InventoryAdapter {
 
     @Override
     public ItemStack getStack(int index) {
-        return this.inventory.peek().orElse(null);
+        ItemStack stack = this.inventory.peek();
+        return stack.isEmpty() ? null : stack;
     }
 
     @Override
@@ -46,12 +47,14 @@ public class SpongeInventoryAdapter implements InventoryAdapter {
 
     @Override
     public ItemStack removeStack(int index) {
-        return this.inventory.poll().orElse(null);
+        ItemStack stack = this.inventory.poll();
+        return stack.isEmpty() ? null : stack;
     }
 
     @Override
     public ItemStack decrementStack(int index, int count) {
-        return this.inventory.poll(count).orElse(null);
+        ItemStack stack = this.inventory.poll(count);
+        return stack.isEmpty() ? null : stack;
     }
 
     @Override

@@ -58,7 +58,7 @@ public abstract class CustomBlock implements BlockNature {
 
     protected List<ItemStack> getDroppedItems() {
         List<ItemStack> items = Lists.newArrayList();
-        CustomItem item = ItemRegistry.get(getId());
+        CustomItem item = ItemRegistry.get(getKey());
         if (item != null) {
             items.add(item.createItemStack());
         }

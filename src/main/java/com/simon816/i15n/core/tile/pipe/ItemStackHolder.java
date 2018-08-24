@@ -17,7 +17,6 @@ import org.spongepowered.api.world.World;
 import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
 import com.simon816.i15n.core.tile.PipeTileData;
-import com.simon816.i15n.core.world.WorldManager;
 
 public class ItemStackHolder implements PipeObject {
 
@@ -177,7 +176,7 @@ public class ItemStackHolder implements PipeObject {
             Vector3d pos = pipePos.toDouble().add(0.5, 0.5, 0.5);
             Item item = createItem(world, pos, this.stack, false);
             if (item != null) {
-                world.spawnEntity(item, WorldManager.SPAWN_CAUSE);
+                world.spawnEntity(item);
             }
         }
     }
@@ -229,11 +228,11 @@ public class ItemStackHolder implements PipeObject {
             this.itemStand = null;
             return; // Attach passenger failed
         }
-        if (!world.spawnEntity(this.itemStand, WorldManager.SPAWN_CAUSE)) {
+        if (!world.spawnEntity(this.itemStand)) {
             this.itemStand = null;
             return; // Spawn stand failed
         }
-        if (!world.spawnEntity(itemEntity, WorldManager.SPAWN_CAUSE)) {
+        if (!world.spawnEntity(itemEntity)) {
             this.itemStand = null;
             return; // Spawn item failed
         }

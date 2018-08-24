@@ -2,6 +2,7 @@ package com.simon816.i15n.core.item;
 
 import java.util.Optional;
 
+import org.spongepowered.api.CatalogKey;
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.data.DataQuery;
@@ -20,8 +21,8 @@ import com.simon816.i15n.core.data.CustomItemData;
 public abstract class CustomItem implements CatalogType {
 
     @Override
-    public String getId() {
-        return ItemRegistry.itemToId(this);
+    public CatalogKey getKey() {
+        return ItemRegistry.itemToKey(this);
     }
 
     public ItemStack createItemStack() {

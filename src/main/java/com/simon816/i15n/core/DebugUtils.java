@@ -10,6 +10,7 @@ import org.spongepowered.api.event.Event;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.block.NotifyNeighborBlockEvent;
+import org.spongepowered.api.event.cause.EventContextKey;
 import org.spongepowered.api.event.item.inventory.AffectSlotEvent;
 import org.spongepowered.api.event.item.inventory.InteractInventoryEvent;
 import org.spongepowered.api.item.inventory.transaction.SlotTransaction;
@@ -25,7 +26,11 @@ public class DebugUtils {
         out.println(event.getClass().getSimpleName());
         printEventByType(out, event);
         out.println("    Caused by");
-        for (Entry<String, Object> e : event.getCause().getNamedCauses().entrySet()) {
+        for (Object obj : event.getCause()) {
+            out.println("        " + prettyCauseObj(obj));
+        }
+        out.println("    With context");
+        for (Entry<EventContextKey<?>, Object> e : event.getContext().asMap().entrySet()) {
             out.println("        " + e.getKey() + ": " + prettyCauseObj(e.getValue()));
         }
         out.println();

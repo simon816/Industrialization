@@ -60,10 +60,9 @@ public class CustomItemData extends AbstractData<CustomItemData, CustomItemData.
     }
 
     @Override
-
-    public DataContainer toContainer() {
+    protected DataContainer fillContainer(DataContainer dataContainer) {
         DataContainer container = this.data.getContainer();
-        Utils.merge(container, super.toContainer());
+        Utils.merge(container, dataContainer);
         return container;
     }
 
@@ -90,8 +89,8 @@ public class CustomItemData extends AbstractData<CustomItemData, CustomItemData.
         }
 
         @Override
-        public DataContainer toContainer() {
-            return super.toContainer().set(DataQuery.of("data"), this.data.copy());
+        protected DataContainer fillContainer(DataContainer dataContainer) {
+            return dataContainer.set(DataQuery.of("data"), this.data.copy());
         }
 
     }

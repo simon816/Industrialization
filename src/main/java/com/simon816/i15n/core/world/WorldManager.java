@@ -13,9 +13,6 @@ import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Entity;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.entity.spawn.SpawnCause;
-import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
 import org.spongepowered.api.util.Direction;
 import org.spongepowered.api.util.Tuple;
 import org.spongepowered.api.world.World;
@@ -24,7 +21,6 @@ import com.flowpowered.math.vector.Vector3i;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.simon816.i15n.core.ITickable;
-import com.simon816.i15n.core.Industrialization;
 import com.simon816.i15n.core.Serialized;
 import com.simon816.i15n.core.TickHelper;
 import com.simon816.i15n.core.Utils;
@@ -38,9 +34,6 @@ import com.simon816.i15n.core.entity.EntityTracker;
 import com.simon816.i15n.core.tile.BlockData;
 
 public class WorldManager {
-
-    public static final Cause SPAWN_CAUSE = Cause.source(SpawnCause.builder().type(SpawnTypes.PLUGIN).build())
-            .named("Plugin", Industrialization.toContainer()).build();
 
     private static final Map<UUID, Tracker> trackers = Maps.newHashMap();
 
