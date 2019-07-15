@@ -1,7 +1,6 @@
 package com.simon816.i15n.core.data;
 
-import java.util.Optional;
-
+import com.simon816.i15n.core.Utils;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataHolder;
 import org.spongepowered.api.data.DataQuery;
@@ -13,7 +12,7 @@ import org.spongepowered.api.data.merge.MergeFunction;
 import org.spongepowered.api.data.persistence.AbstractDataBuilder;
 import org.spongepowered.api.data.persistence.InvalidDataException;
 
-import com.simon816.i15n.core.Utils;
+import java.util.Optional;
 
 public class CustomItemData extends AbstractData<CustomItemData, CustomItemData.Immutable> {
 
@@ -29,7 +28,8 @@ public class CustomItemData extends AbstractData<CustomItemData, CustomItemData.
     }
 
     @Override
-    protected void registerGettersAndSetters() {}
+    protected void registerGettersAndSetters() {
+    }
 
     @Override
     public int getContentVersion() {
@@ -76,7 +76,8 @@ public class CustomItemData extends AbstractData<CustomItemData, CustomItemData.
         }
 
         @Override
-        protected void registerGetters() {}
+        protected void registerGetters() {
+        }
 
         @Override
         public int getContentVersion() {

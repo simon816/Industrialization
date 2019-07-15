@@ -1,7 +1,6 @@
 package com.simon816.i15n.core.block;
 
-import org.spongepowered.api.CatalogKey;
-
+import com.simon816.i15n.compat.CatalogKey;
 import com.simon816.i15n.core.I15NKey;
 import com.simon816.i15n.core.SimpleRegistry;
 

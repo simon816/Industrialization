@@ -1,11 +1,10 @@
 package com.simon816.i15n.core.item;
 
-import org.spongepowered.api.CatalogKey;
-import org.spongepowered.api.item.ItemType;
-
+import com.simon816.i15n.compat.CatalogKey;
 import com.simon816.i15n.core.I15NKey;
 import com.simon816.i15n.core.SimpleRegistry;
 import com.simon816.i15n.core.block.BlockNature;
+import org.spongepowered.api.item.ItemType;
 
 public class ItemRegistry {
 

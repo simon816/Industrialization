@@ -1,4 +1,4 @@
-package com.simon816.i15n.core.entity.display;
+package com.simon816.i15n.silicon.monitor;
 
 import java.util.Arrays;
 import java.util.Map;

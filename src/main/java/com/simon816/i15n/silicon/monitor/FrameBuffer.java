@@ -1,8 +1,8 @@
-package com.simon816.i15n.core.entity.display;
+package com.simon816.i15n.silicon.monitor;
 
 import java.awt.image.BufferedImage;
 
-import com.simon816.i15n.core.entity.display.PixelBaseColor.PixelColor;
+import com.simon816.i15n.silicon.monitor.PixelBaseColor.PixelColor;
 
 public interface FrameBuffer {
 

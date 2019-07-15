@@ -1,8 +1,8 @@
 package com.simon816.i15n.core;
 
-import java.util.Objects;
+import com.simon816.i15n.compat.CatalogKey;
 
-import org.spongepowered.api.CatalogKey;
+import java.util.Objects;
 
 public class I15NKey implements CatalogKey {
 

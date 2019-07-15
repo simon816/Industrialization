@@ -1,10 +1,10 @@
-package com.simon816.i15n.core.block;
+package com.simon816.i15n.silicon.monitor;
 
 import org.spongepowered.api.entity.living.player.Player;
 
 import com.flowpowered.math.vector.Vector3i;
+import com.simon816.i15n.core.block.CustomBlock;
 import com.simon816.i15n.core.tile.BlockData;
-import com.simon816.i15n.core.tile.TileMonitorDriver;
 import com.simon816.i15n.core.world.CustomWorld;
 
 public class MonitorDriverBlock extends CustomBlock {

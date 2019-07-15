@@ -1,10 +1,11 @@
 package com.simon816.i15n.core.block;
 
-import java.util.List;
-
-import javax.annotation.Nullable;
-
-import org.spongepowered.api.CatalogKey;
+import com.flowpowered.math.vector.Vector3d;
+import com.flowpowered.math.vector.Vector3i;
+import com.simon816.i15n.compat.CatalogKey;
+import com.simon816.i15n.core.item.ItemBlockWrapper;
+import com.simon816.i15n.core.tile.BlockData;
+import com.simon816.i15n.core.world.CustomWorld;
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.type.HandType;
@@ -13,11 +14,9 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.util.Direction;
 
-import com.flowpowered.math.vector.Vector3d;
-import com.flowpowered.math.vector.Vector3i;
-import com.simon816.i15n.core.item.ItemBlockWrapper;
-import com.simon816.i15n.core.tile.BlockData;
-import com.simon816.i15n.core.world.CustomWorld;
+import java.util.List;
+
+import javax.annotation.Nullable;
 
 /**
  * A block-like component. Could be a real world Block or a virtual emulated block.
@@ -25,9 +24,13 @@ import com.simon816.i15n.core.world.CustomWorld;
  */
 public interface BlockNature extends CatalogType {
 
-    @Override
+    //@Override TODO API 8: This is an override
     default CatalogKey getKey() {
         return BlockRegistry.blockToKey(this);
+    }
+    @Override
+    default String getId() {
+        return getKey().toString();
     }
 
     BlockData createData(CustomWorld world, Vector3i pos);

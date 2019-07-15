@@ -1,9 +1,8 @@
 package com.simon816.i15n.core;
 
-import org.spongepowered.api.CatalogKey;
-
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.simon816.i15n.compat.CatalogKey;
 
 public class SimpleRegistry<T> {
 

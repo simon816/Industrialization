@@ -1,11 +1,10 @@
 package com.simon816.i15n.core.inv;
 
+import com.simon816.i15n.core.inv.impl.InternalInventoryAdapter;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.item.inventory.Carrier;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
-
-import com.simon816.i15n.core.inv.impl.InternalInventoryAdapter;
 
 public class SpongeInventoryAdapter implements InventoryAdapter {
 
@@ -36,7 +35,7 @@ public class SpongeInventoryAdapter implements InventoryAdapter {
 
     @Override
     public ItemStack getStack(int index) {
-        ItemStack stack = this.inventory.peek();
+        ItemStack stack = this.inventory.peek().orElse(ItemStack.empty());
         return stack.isEmpty() ? null : stack;
     }
 
@@ -47,13 +46,13 @@ public class SpongeInventoryAdapter implements InventoryAdapter {
 
     @Override
     public ItemStack removeStack(int index) {
-        ItemStack stack = this.inventory.poll();
+        ItemStack stack = this.inventory.poll().orElse(ItemStack.empty());
         return stack.isEmpty() ? null : stack;
     }
 
     @Override
     public ItemStack decrementStack(int index, int count) {
-        ItemStack stack = this.inventory.poll(count);
+        ItemStack stack = this.inventory.poll(count).orElse(ItemStack.empty());
         return stack.isEmpty() ? null : stack;
     }
 

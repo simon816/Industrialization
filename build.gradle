@@ -37,8 +37,8 @@ repositories {
 }
 
 dependencies {
-    compile 'org.spongepowered:spongeapi:8.0.0-SNAPSHOT'
-    compile 'org.spongepowered:spongeforge:1.12.2-2705-8.0.0-BETA-3402:dev'
+    compile 'org.spongepowered:spongeapi:7.2.0-SNAPSHOT'
+    compile 'org.spongepowered:spongeforge:1.12.2-2825-7.1.6:dev'
 }
 
 compileJava.options.encoding = 'UTF-8'
@@ -46,9 +46,9 @@ compileJava.options.encoding = 'UTF-8'
 compileJava.options.compilerArgs += '-proc:none'
 
 minecraft {
-    version = "2444"
+    version = "1.12.2-14.23.5.2825"
     runDir = "run"
-    mappings = "snapshot_20170827"
+    mappings = "snapshot_20180808"
 }
 
 processResources {

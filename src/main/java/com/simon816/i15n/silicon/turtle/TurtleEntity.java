@@ -1,6 +1,11 @@
-package com.simon816.i15n.core.entity.turtle;
+package com.simon816.i15n.silicon.turtle;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockTypes;
@@ -32,6 +37,7 @@ import com.simon816.i15n.core.item.ItemRegistry;
 import com.simon816.i15n.core.item.ItemWrench;
 import com.simon816.i15n.core.world.CustomWorld;
 import com.simon816.i15n.core.world.WorldManager;
+import com.simon816.j65el02.Machine;
 
 public class TurtleEntity extends CustomEntity implements EntityTracker {
 
@@ -40,10 +46,19 @@ public class TurtleEntity extends CustomEntity implements EntityTracker {
     private ArmorStand pickaxeStand;
     private boolean isSpawned;
 
-    private final TurtleTask task = new TurtleTask(this);
+    // private final TurtleTask task = new TurtleTask(this);
+    private ExecutorService executor = Executors.newCachedThreadPool();
+    Machine machine;
+    private Future<?> task;
+    private TurtleController controller;
+
 
     public TurtleEntity(World world) {
         super(world);
+        Path romDir = Paths.get("..", "..", "roms");
+        this.machine = new Machine(romDir.resolve("turtle.rom"), 0x2000);
+        this.controller = new TurtleController(this);
+        this.machine.setPeripheral(0, this.controller);
     }
 
     @Override
@@ -213,6 +228,7 @@ public class TurtleEntity extends CustomEntity implements EntityTracker {
         world.addEntityToTracker(this.block.getStand(), this);
         world.addEntityToTracker(this.pickaxeStand, this);
         this.isSpawned = true;
+        this.task = this.executor.submit(this.machine);
         return true;
     }
 
@@ -226,7 +242,7 @@ public class TurtleEntity extends CustomEntity implements EntityTracker {
             remove();
             return;
         }
-        this.task.tick();
+        this.controller.onTick();
         hackBlockFalling();
     }
 
@@ -251,6 +267,7 @@ public class TurtleEntity extends CustomEntity implements EntityTracker {
 
     @Override
     public void onRemoved() {
+        System.out.println("TurtleEntity.onRemoved()");
         if (this.block.getStand() != null) {
             WorldManager.toCustomWorld(this.world).removeEntityFromTracker(this.block.getStand(), this);
             this.tracker.remove("blockStand");
@@ -265,6 +282,9 @@ public class TurtleEntity extends CustomEntity implements EntityTracker {
             WorldManager.toCustomWorld(this.world).removeEntityFromTracker(this.pickaxeStand, this);
             this.tracker.remove("toolStand");
         }
+        this.machine.stop();
+        this.task.cancel(true);
+        this.executor.shutdown();
         this.isSpawned = false;
     }
 
@@ -282,15 +302,14 @@ public class TurtleEntity extends CustomEntity implements EntityTracker {
             falling.offer(Keys.FALL_TIME, Integer.MIN_VALUE);
         }
 
-        this.task.readFrom(data.getView(of("task")).get());
+        // TODO Machine unserialize
     }
 
     @Override
     public void writeTo(DataView data) {
         super.writeTo(data);
         this.tracker.writeTo(data);
-        DataView taskData = data.createView(of("task"));
-        this.task.writeTo(taskData);
+        // TODO Machine serialize
     }
 
 }

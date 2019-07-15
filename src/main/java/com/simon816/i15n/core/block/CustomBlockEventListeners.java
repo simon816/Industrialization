@@ -1,10 +1,15 @@
 package com.simon816.i15n.core.block;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Optional;
-
+import com.flowpowered.math.vector.Vector3d;
+import com.flowpowered.math.vector.Vector3i;
+import com.simon816.i15n.core.DebugUtils;
+import com.simon816.i15n.core.TickHelper;
+import com.simon816.i15n.core.Utils;
+import com.simon816.i15n.core.item.CustomItem;
+import com.simon816.i15n.core.item.ItemBlockWrapper;
+import com.simon816.i15n.core.tile.BlockData;
+import com.simon816.i15n.core.world.CustomWorld;
+import com.simon816.i15n.core.world.WorldManager;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockState;
@@ -32,15 +37,10 @@ import org.spongepowered.api.util.Tuple;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import com.flowpowered.math.vector.Vector3d;
-import com.flowpowered.math.vector.Vector3i;
-import com.simon816.i15n.core.TickHelper;
-import com.simon816.i15n.core.Utils;
-import com.simon816.i15n.core.item.CustomItem;
-import com.simon816.i15n.core.item.ItemBlockWrapper;
-import com.simon816.i15n.core.tile.BlockData;
-import com.simon816.i15n.core.world.CustomWorld;
-import com.simon816.i15n.core.world.WorldManager;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Optional;
 
 public class CustomBlockEventListeners {
 
@@ -59,6 +59,21 @@ public class CustomBlockEventListeners {
 
     public CustomBlockEventListeners() {
         TickHelper.startTicking(CustomBlockEventListeners::clearTempVars);
+    }
+
+    @Listener
+    public void onChangeBlockEvent(ChangeBlockEvent event) {
+        DebugUtils.printEvent(event);
+    }
+
+    @Listener
+    public void onNotifyEvent(NotifyNeighborBlockEvent event) {
+        DebugUtils.printEvent(event);
+    }
+
+    @Listener
+    public void onInteractEvent(InteractBlockEvent event) {
+        DebugUtils.printEvent(event);
     }
 
     /*
@@ -168,7 +183,7 @@ public class CustomBlockEventListeners {
         if (event instanceof InteractBlockEvent.Primary) {
             allowInteract = block.onBlockHit(world, pos, player, hand, side, point);
         } else if (event instanceof InteractBlockEvent.Secondary) {
-            if (!player.getItemInHand(hand).isEmpty() && player.get(Keys.IS_SNEAKING).get()) {
+            if (!player.getItemInHand(hand).orElse(ItemStack.empty()).isEmpty() && player.get(Keys.IS_SNEAKING).get()) {
                 // Pass on the item click without telling the block
                 allowInteract = true;
             } else {

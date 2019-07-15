@@ -1,4 +1,4 @@
-package com.simon816.i15n.core.tile;
+package com.simon816.i15n.automation.pipes;
 
 import java.util.EnumMap;
 import java.util.Iterator;
@@ -14,9 +14,7 @@ import com.flowpowered.math.vector.Vector3i;
 import com.google.common.collect.Lists;
 import com.simon816.i15n.core.ITickable;
 import com.simon816.i15n.core.Utils;
-import com.simon816.i15n.core.tile.pipe.IPipeConnectable;
-import com.simon816.i15n.core.tile.pipe.ItemStackHolder;
-import com.simon816.i15n.core.tile.pipe.PipeObject;
+import com.simon816.i15n.core.tile.BlockData;
 import com.simon816.i15n.core.world.CustomWorld;
 
 public class PipeTileData extends BlockData implements ITickable, IPipeConnectable {

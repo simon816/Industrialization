@@ -1,4 +1,4 @@
-package com.simon816.i15n.core.tile.pipe;
+package com.simon816.i15n.automation.pipes;
 
 import java.util.List;
 import java.util.UUID;
@@ -16,7 +16,6 @@ import org.spongepowered.api.world.World;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
-import com.simon816.i15n.core.tile.PipeTileData;
 
 public class ItemStackHolder implements PipeObject {
 

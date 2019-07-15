@@ -1,17 +1,27 @@
 package com.simon816.i15n.core;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-import java.util.UUID;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
-
+import com.google.inject.Inject;
+import com.simon816.i15n.automation.crafting.AutoCraftingBench;
+import com.simon816.i15n.automation.pipes.PipeBlock;
+import com.simon816.i15n.compat.CatalogKey;
+import com.simon816.i15n.core.block.BlockRegistry;
+import com.simon816.i15n.core.block.CustomBlockEventListeners;
+import com.simon816.i15n.core.data.CustomItemData;
+import com.simon816.i15n.core.entity.EntityEventListeners;
+import com.simon816.i15n.core.entity.EntityRegistry;
+import com.simon816.i15n.core.inv.InventoryEventListeners;
+import com.simon816.i15n.core.item.CustomItemEventListeners;
+import com.simon816.i15n.core.item.ItemRegistry;
+import com.simon816.i15n.core.item.ItemWrench;
+import com.simon816.i15n.core.world.WorldEventListeners;
+import com.simon816.i15n.core.world.WorldManager;
+import com.simon816.i15n.silicon.monitor.ItemMonitor;
+import com.simon816.i15n.silicon.monitor.MonitorDriverBlock;
+import com.simon816.i15n.silicon.monitor.MonitorEntity;
+import com.simon816.i15n.silicon.turtle.ItemTurtle;
+import com.simon816.i15n.silicon.turtle.TurtleEntity;
+import com.simon816.i15n.test.TestBlock;
 import org.slf4j.Logger;
-import org.spongepowered.api.CatalogKey;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.data.DataContainer;
@@ -32,25 +42,15 @@ import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.world.World;
 
-import com.google.inject.Inject;
-import com.simon816.i15n.core.block.AutoCraftingBench;
-import com.simon816.i15n.core.block.BlockRegistry;
-import com.simon816.i15n.core.block.CustomBlockEventListeners;
-import com.simon816.i15n.core.block.MonitorDriverBlock;
-import com.simon816.i15n.core.block.PipeBlock;
-import com.simon816.i15n.core.data.CustomItemData;
-import com.simon816.i15n.core.entity.EntityEventListeners;
-import com.simon816.i15n.core.entity.EntityRegistry;
-import com.simon816.i15n.core.entity.display.MonitorEntity;
-import com.simon816.i15n.core.entity.turtle.TurtleEntity;
-import com.simon816.i15n.core.inv.InventoryEventListeners;
-import com.simon816.i15n.core.item.CustomItemEventListeners;
-import com.simon816.i15n.core.item.ItemMonitor;
-import com.simon816.i15n.core.item.ItemRegistry;
-import com.simon816.i15n.core.item.ItemTurtle;
-import com.simon816.i15n.core.item.ItemWrench;
-import com.simon816.i15n.core.world.WorldEventListeners;
-import com.simon816.i15n.core.world.WorldManager;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.util.UUID;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 @Plugin(id = "industrialization", name = "Industrialization", version = "0.0.1")
 public class Industrialization {
@@ -95,9 +95,9 @@ public class Industrialization {
                 .dataClass(CustomItemData.class)
                 .immutableClass(CustomItemData.Immutable.class)
                 .builder(new CustomItemData.Builder())
-                .manipulatorId("custom_item_data")
-                .dataName("Custom Item Data")
-                .buildAndRegister(toContainer());
+                .id("custom_item_data")
+                .name("Custom Item Data")
+                .build();
     }
 
     private void registerObjects() {
@@ -136,7 +136,8 @@ public class Industrialization {
                 .where('S', Ingredient.of(ItemTypes.STICK))
                 .where('C', Ingredient.of(ItemTypes.CRAFTING_TABLE))
                 .result(ItemRegistry.get(key("auto_crafting_bench")).createItemStack())
-                .build("auto_crafting_bench", this);
+                .id("auto_crafting_bench")
+                .build();
         ImplUtil.registerRecipe(recipe);
 
         recipe = builder.reset()
@@ -145,7 +146,8 @@ public class Industrialization {
                        " P ")
                 .where('P', Ingredient.of(ItemTypes.GLASS_PANE))
                 .result(ItemRegistry.get(key("pipe")).createItemStack())
-                .build("pipe", this);
+                .id("pipe")
+                .build();
         ImplUtil.registerRecipe(recipe);
 
         recipe = builder.reset()
@@ -157,7 +159,8 @@ public class Industrialization {
                 .where('D', Ingredient.of(ItemTypes.DISPENSER))
                 .where('P', Ingredient.of(ItemTypes.DIAMOND_PICKAXE))
                 .result(ItemRegistry.get(key("turtle")).createItemStack())
-                .build("turtle", this);
+                .id("turtle")
+                .build();
         ImplUtil.registerRecipe(recipe);
 
 
@@ -169,7 +172,8 @@ public class Industrialization {
                 .where('T', Ingredient.of(ItemTypes.REDSTONE_TORCH))
                 .where('S', Ingredient.of(ItemTypes.STICK))
                 .result(ItemRegistry.get(key("wrench")).createItemStack())
-                .build("wrench", this);
+                .id("wrench")
+                .build();
         ImplUtil.registerRecipe(recipe);
 
         recipe = builder.reset()
@@ -179,7 +183,8 @@ public class Industrialization {
                 .where('P', Ingredient.of(ItemTypes.GLASS_PANE))
                 .where('F', Ingredient.of(ItemTypes.ITEM_FRAME))
                 .result(ItemRegistry.get(key("monitor")).createItemStack())
-                .build("monitor", this);
+                .id("monitor")
+                .build();
         ImplUtil.registerRecipe(recipe);
 
         // @formatter:on

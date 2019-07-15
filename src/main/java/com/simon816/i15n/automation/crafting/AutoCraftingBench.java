@@ -1,4 +1,4 @@
-package com.simon816.i15n.core.block;
+package com.simon816.i15n.automation.crafting;
 
 import java.util.Optional;
 
@@ -9,8 +9,8 @@ import org.spongepowered.api.util.Direction;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
+import com.simon816.i15n.core.block.CustomBlock;
 import com.simon816.i15n.core.tile.BlockData;
-import com.simon816.i15n.core.tile.TileAutoCrafting;
 import com.simon816.i15n.core.world.CustomWorld;
 
 public class AutoCraftingBench extends CustomBlock {

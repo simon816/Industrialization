@@ -5,12 +5,23 @@ import java.io.IOException;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.world.LoadWorldEvent;
 import org.spongepowered.api.event.world.UnloadWorldEvent;
+import org.spongepowered.api.event.world.chunk.LoadChunkEvent;
+import org.spongepowered.api.event.world.chunk.UnloadChunkEvent;
 
 import com.simon816.i15n.core.Industrialization;
 import com.simon816.i15n.core.Utils;
 
 public class WorldEventListeners {
 
+    @Listener
+    public void onChunkLoad(LoadChunkEvent event) {
+        //System.out.println(event);
+    }
+
+    @Listener
+    public void onChunkUnload(UnloadChunkEvent event) {
+        //System.out.println(event);
+    }
 
     @Listener
     public void onWorldLoad(LoadWorldEvent event) {

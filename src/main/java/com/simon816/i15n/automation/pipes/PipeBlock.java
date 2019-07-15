@@ -1,9 +1,21 @@
-package com.simon816.i15n.core.block;
+package com.simon816.i15n.automation.pipes;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
+import com.flowpowered.math.vector.Vector3d;
+import com.flowpowered.math.vector.Vector3f;
+import com.flowpowered.math.vector.Vector3i;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.simon816.i15n.core.ImplUtil;
+import com.simon816.i15n.core.Utils;
+import com.simon816.i15n.core.block.EnhancedCustomBlock;
+import com.simon816.i15n.core.entity.MultiEntityStructure;
+import com.simon816.i15n.core.entity.MultiEntityStructure.StructureInstance;
+import com.simon816.i15n.core.inv.InventoryAdapter;
+import com.simon816.i15n.core.inv.InventoryProvider;
+import com.simon816.i15n.core.item.ItemBlockWrapper;
+import com.simon816.i15n.core.tile.BlockData;
+import com.simon816.i15n.core.world.AdditionalBlockInfo;
+import com.simon816.i15n.core.world.CustomWorld;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockState;
@@ -31,24 +43,9 @@ import org.spongepowered.api.util.Direction;
 import org.spongepowered.api.world.BlockChangeFlags;
 import org.spongepowered.api.world.World;
 
-import com.flowpowered.math.vector.Vector3d;
-import com.flowpowered.math.vector.Vector3f;
-import com.flowpowered.math.vector.Vector3i;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.simon816.i15n.core.ImplUtil;
-import com.simon816.i15n.core.Utils;
-import com.simon816.i15n.core.entity.MultiEntityStructure;
-import com.simon816.i15n.core.entity.MultiEntityStructure.StructureInstance;
-import com.simon816.i15n.core.inv.InventoryAdapter;
-import com.simon816.i15n.core.inv.InventoryProvider;
-import com.simon816.i15n.core.item.ItemBlockWrapper;
-import com.simon816.i15n.core.tile.BlockData;
-import com.simon816.i15n.core.tile.PipeTileData;
-import com.simon816.i15n.core.tile.pipe.IPipeConnectable;
-import com.simon816.i15n.core.tile.pipe.InventoryPipeConnection;
-import com.simon816.i15n.core.world.AdditionalBlockInfo;
-import com.simon816.i15n.core.world.CustomWorld;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 public class PipeBlock extends EnhancedCustomBlock {
 
@@ -126,7 +123,7 @@ public class PipeBlock extends EnhancedCustomBlock {
         StructureInstance instance = this.entityStruct.initialize(world, pos);
         Variant variant = Variant.values()[new Random().nextInt(Variant.values().length)];
         instance.forEachEntity(e -> {
-            ItemStack paneItem = ((ArmorStand) e).getHelmet().copy();
+            ItemStack paneItem = ((ArmorStand) e).getHelmet().orElse(ItemStack.empty()).copy();
             paneItem.offer(Keys.DYE_COLOR, variant.dyeColor());
             ((ArmorStand) e).setHelmet(paneItem);
         });
@@ -194,8 +191,10 @@ public class PipeBlock extends EnhancedCustomBlock {
     public boolean onNeighborNotify(CustomWorld world, Vector3i pos, Vector3i neighbourPos, Direction side) {
         IPipeConnectable connection = getConnectionAt(world, neighbourPos);
         if (connection != null) {
+            System.out.println("join at " + side);
             join(world, pos, side, neighbourPos);
         } else {
+            System.out.println("disconnect at " + side);
             disconnect(world, pos, side);
         }
         BlockData pipeTile = world.getBlockData(pos);

@@ -1,8 +1,8 @@
 package com.simon816.i15n.core.item;
 
-import java.util.Optional;
-
-import org.spongepowered.api.CatalogKey;
+import com.flowpowered.math.vector.Vector3d;
+import com.simon816.i15n.compat.CatalogKey;
+import com.simon816.i15n.core.data.CustomItemData;
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.data.DataQuery;
@@ -15,14 +15,19 @@ import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.Direction;
 
-import com.flowpowered.math.vector.Vector3d;
-import com.simon816.i15n.core.data.CustomItemData;
+import java.util.Optional;
 
 public abstract class CustomItem implements CatalogType {
 
-    @Override
+    // TODO API 8: This is an override
+    // @Override
     public CatalogKey getKey() {
         return ItemRegistry.itemToKey(this);
+    }
+
+    @Override
+    public String getId() {
+        return getKey().getValue();
     }
 
     public ItemStack createItemStack() {

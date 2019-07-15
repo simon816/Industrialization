@@ -1,4 +1,4 @@
-package com.simon816.i15n.core.tile;
+package com.simon816.i15n.automation.crafting;
 
 import java.util.List;
 import java.util.Optional;
@@ -38,6 +38,7 @@ import com.simon816.i15n.core.inv.SimpleInventory;
 import com.simon816.i15n.core.inv.SimpleSidedInventory;
 import com.simon816.i15n.core.inv.SimpleSidedInventory.PullHandler;
 import com.simon816.i15n.core.recipe.RecipeUtil;
+import com.simon816.i15n.core.tile.CustomTileEntity;
 import com.simon816.i15n.core.world.CustomWorld;
 
 

@@ -1,4 +1,4 @@
-package com.simon816.i15n.core.tile.pipe;
+package com.simon816.i15n.automation.pipes;
 
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.util.Direction;
@@ -6,7 +6,6 @@ import org.spongepowered.api.world.World;
 
 import com.flowpowered.math.vector.Vector3i;
 import com.simon816.i15n.core.Serialized;
-import com.simon816.i15n.core.tile.PipeTileData;
 
 public interface PipeObject extends Serialized {
 

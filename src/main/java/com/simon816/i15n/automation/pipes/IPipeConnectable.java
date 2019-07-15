@@ -1,4 +1,4 @@
-package com.simon816.i15n.core.tile.pipe;
+package com.simon816.i15n.automation.pipes;
 
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.util.Direction;

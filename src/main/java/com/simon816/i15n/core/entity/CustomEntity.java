@@ -1,14 +1,13 @@
 package com.simon816.i15n.core.entity;
 
-import org.spongepowered.api.CatalogKey;
-import org.spongepowered.api.CatalogType;
-import org.spongepowered.api.data.DataView;
-import org.spongepowered.api.world.World;
-
 import com.flowpowered.math.vector.Vector3d;
+import com.simon816.i15n.compat.CatalogKey;
 import com.simon816.i15n.core.ITickable;
 import com.simon816.i15n.core.Serialized;
 import com.simon816.i15n.core.world.CustomWorld;
+import org.spongepowered.api.CatalogType;
+import org.spongepowered.api.data.DataView;
+import org.spongepowered.api.world.World;
 
 
 public abstract class CustomEntity implements CatalogType, ITickable, Serialized {
@@ -22,10 +21,15 @@ public abstract class CustomEntity implements CatalogType, ITickable, Serialized
         this.world = world;
     }
 
-    @Override
+    //@Override TODO API 8: This is an override
     public CatalogKey getKey() {
         return EntityRegistry.entityToKey(this.getClass());
     }
+    @Override
+    public String getId() {
+        return getKey().toString();
+    }
+
 
     public Vector3d getPosition() {
         return this.pos;

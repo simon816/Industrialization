@@ -1,4 +1,4 @@
-package com.simon816.i15n.core.tile;
+package com.simon816.i15n.silicon.monitor;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,10 +14,7 @@ import org.spongepowered.api.util.AABB;
 import com.flowpowered.math.vector.Vector3i;
 import com.simon816.i15n.core.ITickable;
 import com.simon816.i15n.core.entity.EntityTracker;
-import com.simon816.i15n.core.entity.display.ArrayFrameBuffer;
-import com.simon816.i15n.core.entity.display.FrameBuffer;
-import com.simon816.i15n.core.entity.display.MonitorEntity;
-import com.simon816.i15n.core.entity.display.PixelBaseColor;
+import com.simon816.i15n.core.tile.BlockData;
 import com.simon816.i15n.core.world.CustomWorld;
 import com.simon816.j65el02.Machine;
 import com.simon816.j65el02.device.FileDiskDriver;

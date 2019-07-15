@@ -1,4 +1,4 @@
-package com.simon816.i15n.core.item;
+package com.simon816.i15n.silicon.monitor;
 
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.data.type.HandType;
@@ -10,37 +10,33 @@ import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.util.Direction;
 
 import com.flowpowered.math.vector.Vector3d;
-import com.simon816.i15n.core.entity.turtle.TurtleEntity;
+import com.flowpowered.math.vector.Vector3i;
+import com.simon816.i15n.core.Utils;
+import com.simon816.i15n.core.item.CustomItem;
 import com.simon816.i15n.core.world.CustomWorld;
 import com.simon816.i15n.core.world.WorldManager;
 
-public class ItemTurtle extends CustomItem {
+public class ItemMonitor extends CustomItem {
 
     @Override
     public String getName() {
-        return "Turtle";
+        return "Computer Monitor";
     }
 
     @Override
     protected ItemType getVanillaItem() {
-        return ItemTypes.DISPENSER;
+        return ItemTypes.ITEM_FRAME;
     }
 
     @Override
     public boolean onItemUse(ItemStack itemStack, Player player, HandType currHand, BlockSnapshot clickedBlock,
-            Direction side, Vector3d hitPoint) {
+            Direction side, Vector3d clickPoint) {
         CustomWorld world = WorldManager.toCustomWorld(player.getWorld());
-        Vector3d pos;
-        if (hitPoint == null) {
-            pos = clickedBlock.getPosition().add(side.asBlockOffset()).toDouble().add(0.5, 0, 0.5);
-        } else {
-            pos = clickedBlock.getPosition().toDouble().add(hitPoint);
-        }
-        TurtleEntity turtle = new TurtleEntity(player.getWorld());
-        turtle.setPosition(pos);
-        Vector3d r = player.getHeadRotation();
-        turtle.setRotation(new Vector3d(r.getX(), r.getY() + 180, r.getZ()));
-        if (world.spawnEntity(turtle)) {
+        Vector3i pos = clickedBlock.getPosition().add(side.asBlockOffset());
+        MonitorEntity monitor = new MonitorEntity(player.getWorld(), 5, 4);
+        monitor.setPosition(pos.toDouble());
+        monitor.setRotation(new Vector3d(0, Utils.directionToRotation(side), 0));
+        if (world.spawnEntity(monitor)) {
             if (player.gameMode().get() != GameModes.CREATIVE) {
                 itemStack.setQuantity(itemStack.getQuantity() - 1);
                 if (itemStack.getQuantity() == 0) {
@@ -49,7 +45,8 @@ public class ItemTurtle extends CustomItem {
                 player.setItemInHand(currHand, itemStack);
             }
         }
-        return false;
+
+        return true;
     }
 
 }
